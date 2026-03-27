@@ -1,4 +1,4 @@
-Fortis Music — Public Repository FM
+Fortis Music — Public Repository
 
 This repository contains the public-facing assets and demo files for the Fortis Music MVP.  
 The full project, including architecture, documentation, and internal development files, is stored in a private repository.
