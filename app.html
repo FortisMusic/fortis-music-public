@@ -3417,6 +3417,19 @@
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 
+<!-- PUBLIC PROFILE PAGE -->
+<div class="page" id="page-pub-profile">
+  <div style="max-width:860px;margin:0 auto;padding:40px 24px 80px;">
+    <button onclick="history.back()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;border:1px solid var(--border);background:rgba(200,180,255,0.06);color:var(--muted);font-size:0.78rem;cursor:pointer;font-family:var(--font-body);margin-bottom:24px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Back
+    </button>
+    <div id="pubProfileInner">
+      <div style="color:var(--muted);padding:60px 0;text-align:center;">Loading profile…</div>
+    </div>
+  </div>
+</div>
+
 <!-- AUTH MODAL -->
 <div id="gateOverlay" onclick="if(event.target===this)fmAuthHide()">
   <div class="gate-box">
@@ -3845,6 +3858,225 @@
 </div>
 
 
+<!-- PROFILE COMPLETE / EDIT OVERLAY -->
+<div id="fmProfileOverlay">
+  <div class="fm-profile-box" id="fmProfileBox">
+
+    <button class="fm-profile-close" id="fmProfileCloseBtn" onclick="fmProfileClose()">&#x2715;</button>
+
+    <div class="gate-logo">
+      <svg width="26" height="26" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="url(#pfgl)"/><path d="M20 8l-8 4v8c0 6 8 10 8 10s8-4 8-10V12l-8-4z" fill="rgba(255,255,255,0.9)"/><defs><linearGradient id="pfgl" x1="0" y1="0" x2="40" y2="40"><stop offset="0%" stop-color="#7B2FFF"/><stop offset="100%" stop-color="#E91E8C"/></linearGradient></defs></svg>
+      Fortis Music
+    </div>
+
+    <h2 id="fmProfileTitle" style="font-family:var(--font-head);font-size:1.3rem;font-weight:800;margin-bottom:4px;">Complete Your Profile</h2>
+    <p id="fmProfileSubtitle" style="color:var(--muted);font-size:0.82rem;margin-bottom:18px;">Fill in your details to go live on the platform.</p>
+
+    <!-- Progress -->
+    <div class="fm-prog-wrap">
+      <div class="fm-prog-bar"><div id="fmProgFill" class="fm-prog-fill" style="width:0%"></div></div>
+      <span id="fmProgText" style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">0% complete</span>
+    </div>
+
+    <!-- Avatar upload -->
+    <div class="fm-photo-section">
+      <div id="fmAvatarPreview" class="fm-photo-avatar" onclick="document.getElementById('fmAvatarInput').click()" title="Upload photo">
+        <span id="fmAvatarLetter">?</span>
+      </div>
+      <input type="file" id="fmAvatarInput" accept="image/*" style="display:none" onchange="fmPhotoPreview(this,'fmAvatarPreview','fmAvatarLetter')">
+      <span class="fm-photo-hint">Click to upload profile photo</span>
+    </div>
+
+    <!-- Cover photo (venues/stores) -->
+    <div id="fmCoverSection" style="display:none;" class="fm-cover-section">
+      <div id="fmCoverPreview" class="fm-photo-cover" onclick="document.getElementById('fmCoverInput').click()">
+        <span>+ Cover Photo</span>
+      </div>
+      <input type="file" id="fmCoverInput" accept="image/*" style="display:none" onchange="fmPhotoPreview(this,'fmCoverPreview',null)">
+    </div>
+
+    <!-- Display name (non-Fan roles) -->
+    <div id="pfDisplayNameSection" style="display:none;" class="gate-row full"><div class="gate-field">
+      <label id="pfDisplayNameLabel">Artist / Band Name</label>
+      <input type="text" id="pfDisplayName" placeholder="Artist / Band Name" autocomplete="off" oninput="fmProgUpdate()">
+    </div></div>
+
+    <!-- City -->
+    <div class="gate-row full"><div class="gate-field">
+      <label>City <span style="color:#E91E8C">*</span></label>
+      <input type="text" id="pfCity" placeholder="Your city" oninput="fmProgUpdate()">
+    </div></div>
+
+    <!-- Country -->
+    <div class="gate-row full"><div class="gate-field">
+      <label>Country <span style="color:#E91E8C">*</span></label>
+      <select id="pfCountry" onchange="fmProgUpdate()">
+        <option value="">Select country…</option>
+      </select>
+    </div></div>
+
+    <!-- Full Address (Club/Bar, Music Studio) -->
+    <div id="pfAddressSection" style="display:none;" class="gate-row full"><div class="gate-field">
+      <label>Full Address</label>
+      <input type="text" id="pfAddress" placeholder="Street and number" oninput="fmProgUpdate()">
+    </div></div>
+
+    <!-- Phone -->
+    <div id="pfPhoneSection" style="display:none;" class="gate-row full"><div class="gate-field">
+      <label>Phone</label>
+      <input type="tel" id="pfPhone" placeholder="+381 60 123 4567" oninput="fmProgUpdate()">
+    </div></div>
+
+    <!-- Bio -->
+    <div class="gate-row full"><div class="gate-field">
+      <label>Bio</label>
+      <textarea id="pfBio" rows="3" placeholder="Tell the community about yourself…" oninput="fmProgUpdate()" style="background:rgba(200,180,255,0.09);border:1px solid var(--border);border-radius:10px;padding:10px 13px;color:var(--text);font-size:0.87rem;outline:none;font-family:var(--font-body);width:100%;box-sizing:border-box;resize:vertical;transition:border-color 0.2s;"></textarea>
+    </div></div>
+
+    <!-- Genres (Artist, DJ, Club/Bar) -->
+    <div id="pfGenreSection" style="display:none;">
+      <div class="fm-field-label">Genres</div>
+      <div class="fm-chips" id="pfGenreChips"></div>
+    </div>
+
+    <!-- Dance Styles (Dance Club) -->
+    <div id="pfDanceStyleSection" style="display:none;">
+      <div class="fm-field-label">Dance Styles</div>
+      <div class="fm-chips" id="pfDanceChips"></div>
+    </div>
+
+    <!-- Opening Hours (Club/Bar) -->
+    <div id="pfHoursSection" style="display:none;" class="gate-row full"><div class="gate-field">
+      <label>Opening Hours</label>
+      <input type="text" id="pfHours" placeholder="Mon–Fri 18:00–04:00, Sat–Sun 20:00–06:00" oninput="fmProgUpdate()">
+    </div></div>
+
+    <!-- Capacity (Club/Bar) -->
+    <div id="pfCapacitySection" style="display:none;" class="gate-row full"><div class="gate-field">
+      <label>Capacity</label>
+      <input type="number" id="pfCapacity" placeholder="500" min="1" oninput="fmProgUpdate()">
+    </div></div>
+
+    <!-- Google Maps link (Club/Bar) -->
+    <div id="pfMapsSection" style="display:none;" class="gate-row full"><div class="gate-field">
+      <label>Google Maps Link</label>
+      <input type="url" id="pfMaps" placeholder="https://maps.google.com/…" oninput="fmProgUpdate()">
+    </div></div>
+
+    <!-- Upcoming Gigs (DJ) -->
+    <div id="pfGigsSection" style="display:none;" class="gate-row full"><div class="gate-field">
+      <label>Upcoming Gigs</label>
+      <textarea id="pfGigs" rows="2" placeholder="Apr 30 — Club XYZ, Belgrade…" oninput="fmProgUpdate()" style="background:rgba(200,180,255,0.09);border:1px solid var(--border);border-radius:10px;padding:10px 13px;color:var(--text);font-size:0.87rem;outline:none;font-family:var(--font-body);width:100%;box-sizing:border-box;resize:vertical;transition:border-color 0.2s;"></textarea>
+    </div></div>
+
+    <!-- Class Schedule (Dance Club) -->
+    <div id="pfScheduleSection" style="display:none;" class="gate-row full"><div class="gate-field">
+      <label>Class Schedule</label>
+      <textarea id="pfSchedule" rows="2" placeholder="Mon/Wed 18:00 — Hip Hop Beginner…" oninput="fmProgUpdate()" style="background:rgba(200,180,255,0.09);border:1px solid var(--border);border-radius:10px;padding:10px 13px;color:var(--text);font-size:0.87rem;outline:none;font-family:var(--font-body);width:100%;box-sizing:border-box;resize:vertical;transition:border-color 0.2s;"></textarea>
+    </div></div>
+
+    <!-- Equipment (Music Studio) -->
+    <div id="pfEquipmentSection" style="display:none;" class="gate-row full"><div class="gate-field">
+      <label>Equipment List</label>
+      <textarea id="pfEquipment" rows="2" placeholder="SSL 4000E, Neumann U87, Pro Tools…" oninput="fmProgUpdate()" style="background:rgba(200,180,255,0.09);border:1px solid var(--border);border-radius:10px;padding:10px 13px;color:var(--text);font-size:0.87rem;outline:none;font-family:var(--font-body);width:100%;box-sizing:border-box;resize:vertical;transition:border-color 0.2s;"></textarea>
+    </div></div>
+
+    <!-- Pricing (Music Studio) -->
+    <div id="pfPricingSection" style="display:none;" class="gate-row full"><div class="gate-field">
+      <label>Pricing per Hour</label>
+      <input type="text" id="pfPricing" placeholder="€50/hr" oninput="fmProgUpdate()">
+    </div></div>
+
+    <!-- Availability (Music Studio) -->
+    <div id="pfAvailabilitySection" style="display:none;" class="gate-row full"><div class="gate-field">
+      <label>Availability / Booking Info</label>
+      <textarea id="pfAvailability" rows="2" placeholder="Available Mon–Sat 10:00–22:00…" oninput="fmProgUpdate()" style="background:rgba(200,180,255,0.09);border:1px solid var(--border);border-radius:10px;padding:10px 13px;color:var(--text);font-size:0.87rem;outline:none;font-family:var(--font-body);width:100%;box-sizing:border-box;resize:vertical;transition:border-color 0.2s;"></textarea>
+    </div></div>
+
+    <!-- Brands (Gear Store) -->
+    <div id="pfBrandsSection" style="display:none;" class="gate-row full"><div class="gate-field">
+      <label>Brands We Carry</label>
+      <input type="text" id="pfBrands" placeholder="Fender, Gibson, Roland, Native Instruments…" oninput="fmProgUpdate()">
+    </div></div>
+
+    <!-- Website -->
+    <div id="pfWebsiteSection" style="display:none;" class="gate-row full"><div class="gate-field">
+      <label>Website</label>
+      <input type="url" id="pfWebsite" placeholder="https://yoursite.com" oninput="fmProgUpdate()">
+    </div></div>
+
+    <!-- Social links block -->
+    <div id="pfSocialSection" style="display:none;">
+      <div class="fm-field-label">Social Links</div>
+      <div id="pfSocial_instagram" style="display:none;" class="gate-row full"><div class="gate-field">
+        <label>Instagram</label>
+        <input type="url" id="pfInstagram" placeholder="https://instagram.com/yourname" oninput="fmProgUpdate()">
+      </div></div>
+      <div id="pfSocial_youtube" style="display:none;" class="gate-row full"><div class="gate-field">
+        <label>YouTube</label>
+        <input type="url" id="pfYoutube" placeholder="https://youtube.com/@yourname" oninput="fmProgUpdate()">
+      </div></div>
+      <div id="pfSocial_spotify" style="display:none;" class="gate-row full"><div class="gate-field">
+        <label>Spotify</label>
+        <input type="url" id="pfSpotify" placeholder="https://open.spotify.com/artist/…" oninput="fmProgUpdate()">
+      </div></div>
+      <div id="pfSocial_soundcloud" style="display:none;" class="gate-row full"><div class="gate-field">
+        <label>SoundCloud</label>
+        <input type="url" id="pfSoundcloud" placeholder="https://soundcloud.com/yourname" oninput="fmProgUpdate()">
+      </div></div>
+      <div id="pfSocial_mixcloud" style="display:none;" class="gate-row full"><div class="gate-field">
+        <label>Mixcloud</label>
+        <input type="url" id="pfMixcloud" placeholder="https://mixcloud.com/yourname" oninput="fmProgUpdate()">
+      </div></div>
+      <div id="pfSocial_facebook" style="display:none;" class="gate-row full"><div class="gate-field">
+        <label>Facebook</label>
+        <input type="url" id="pfFacebook" placeholder="https://facebook.com/yourpage" oninput="fmProgUpdate()">
+      </div></div>
+    </div>
+
+    <!-- Public email (shown when Fortis contact is OFF) -->
+    <div id="pfPublicEmailSection" style="display:none;" class="gate-row full"><div class="gate-field">
+      <label>Public Email</label>
+      <input type="email" id="pfPublicEmail" placeholder="contact@yourname.com" oninput="fmProgUpdate()">
+    </div></div>
+
+    <!-- Fortis contact toggle -->
+    <div class="fm-toggle-row">
+      <div>
+        <span style="font-size:0.85rem;font-weight:600;color:var(--text);">Fortis contact form</span>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">Allow fans to contact you through Fortis</div>
+      </div>
+      <label class="fm-toggle">
+        <input type="checkbox" id="pfFortisContact" checked onchange="fmContactToggle()">
+        <span class="fm-toggle-track"><span class="fm-toggle-thumb"></span></span>
+      </label>
+    </div>
+
+    <!-- Contact required warning -->
+    <div class="gate-err" id="pfContactWarn" style="display:none;">
+      Please add at least one contact method or keep the Fortis contact form enabled.
+    </div>
+
+    <!-- Username -->
+    <div class="gate-row full"><div class="gate-field">
+      <label>Username <span style="font-weight:400;color:var(--muted);font-size:0.7rem;">— your public profile URL</span></label>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="text" id="pfUsername" placeholder="yourname" oninput="fmProgUpdate()" style="flex:1;">
+        <button type="button" onclick="fmGenerateUsername()" style="padding:10px 13px;border-radius:10px;border:1px solid var(--border);background:rgba(200,180,255,0.06);color:var(--muted);font-size:0.75rem;cursor:pointer;white-space:nowrap;font-family:var(--font-body);">Auto</button>
+      </div>
+      <div id="pfUsernamePreview" style="font-size:0.7rem;color:var(--muted);margin-top:4px;"></div>
+    </div></div>
+
+    <div class="gate-err" id="pfError"></div>
+    <button class="gate-submit" id="pfSaveBtn" onclick="fmProfileSave()">Save Profile &#x2192;</button>
+
+    <div id="pfLaterRow" style="text-align:center;margin-top:10px;">
+      <span style="cursor:pointer;color:var(--muted);font-size:0.78rem;" onclick="fmProfileClose()">Complete later</span>
+    </div>
+
+  </div>
+</div>
+
 <!-- LOCKED ACTION MODAL -->
 <div id="lockedOverlay" onclick="if(event.target===this)fmLockedHide()">
   <div class="gate-box" style="text-align:center;max-width:380px;">
@@ -3872,6 +4104,7 @@
   var SUPA_URL = 'https://wexvxiidiiusosjilfjg.supabase.co';
   var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndleHZ4aWlkaWl1c29zamlsZmpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMTQ1MDMsImV4cCI6MjA5MjU5MDUwM30.QKIlrINzAjHDRg0iJ8aKbhzChoGknphUbjpz_lDpOLQ';
   var _sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+  window._sb = _sb;
   var _fmUser    = null;
   var _fmProfile = null;
 
@@ -3884,7 +4117,7 @@
   _sb.auth.getSession().then(function (r) {
     if (r.data && r.data.session) {
       _fmUser = r.data.session.user;
-      fmLoadProfile(fmAuthUIUpdate);
+      fmLoadProfile(function() { fmAuthUIUpdate(); typeof window.fmCheckProfileComplete==='function' && window.fmCheckProfileComplete('INITIAL'); });
     } else {
       fmAuthUIUpdate();
     }
@@ -3892,7 +4125,7 @@
 
   _sb.auth.onAuthStateChange(function (event, session) {
     _fmUser = session ? session.user : null;
-    if (_fmUser) { fmLoadProfile(fmAuthUIUpdate); }
+    if (_fmUser) { fmLoadProfile(function() { fmAuthUIUpdate(); typeof window.fmCheckProfileComplete==='function' && window.fmCheckProfileComplete(event); }); }
     else { _fmProfile = null; fmAuthUIUpdate(); }
   });
 
@@ -3903,6 +4136,7 @@
   }
 
   function fmAuthUIUpdate() {
+    window._fmUser = _fmUser; window._fmProfile = _fmProfile;
     var joinBtn    = document.getElementById('navJoinBtn');
     var avatarWrap = document.getElementById('navAvatarWrap');
     var initEl     = document.getElementById('navAvatarInitials');
@@ -3958,6 +4192,19 @@
     document.querySelectorAll('#fmSignupForm .gate-role-opt').forEach(function (o) { o.classList.remove('sel'); });
     el.classList.add('sel');
     document.getElementById('fmSignupRole').value = val;
+    var dnRow = document.getElementById('fmSignupDNRow');
+    var dnLabel = document.getElementById('fmSignupDNLabel');
+    var dnInput = document.getElementById('fmSignupDN');
+    var LABELS = {'Artist':'Artist / Band Name','DJ':'DJ Name','Club/Bar':'Club / Bar Name',
+      'Event Organizer':'Organization Name','Dance Club':'Dance Club Name',
+      'Music Studio':'Studio Name','Gear Store':'Store Name'};
+    if (val !== 'Fan' && LABELS[val]) {
+      if (dnRow)   dnRow.style.display   = '';
+      if (dnLabel) dnLabel.textContent    = LABELS[val];
+      if (dnInput) dnInput.placeholder    = LABELS[val];
+    } else {
+      if (dnRow) dnRow.style.display = 'none';
+    }
   }
 
   function fmSignup(e) {
@@ -3979,11 +4226,17 @@
         return;
       }
       var uid = r.data.user.id;
-      _sb.from('profiles').insert({ id: uid, email: email, full_name: fullName, role: role })
+      var displayName = document.getElementById('fmSignupDN') ? document.getElementById('fmSignupDN').value.trim() : '';
+      _sb.from('profiles').insert({ id: uid, email: email, full_name: fullName, role: role, display_name: displayName || null })
         .then(function () {
           btn.disabled = false; btn.textContent = 'Create Account →';
-          fmAuthHide();
-          if (typeof showToast === 'function') showToast('Welcome to Fortis Music, ' + fullName + '!');
+          var sf = document.getElementById('fmSignupForm');
+          if (sf) sf.innerHTML = '<div style="text-align:center;padding:24px 0;">'
+            + '<div style="font-size:2.5rem;margin-bottom:14px;">✉️</div>'
+            + '<h3 style="margin-bottom:8px;font-family:var(--font-head);">Check your email</h3>'
+            + '<p style="color:var(--muted);font-size:0.87rem;line-height:1.65;margin-bottom:20px;">We sent a confirmation link to<br><strong style="color:var(--text);">' + email + '</strong><br><span style="font-size:0.78rem;">Click it to activate your account.</span></p>'
+            + '<button class="gate-submit" onclick="fmAuthHide()">Got it →</button>'
+            + '</div>';
         });
     }).catch(function (ex) {
       btn.disabled = false; btn.textContent = 'Create Account →';
@@ -4045,6 +4298,509 @@
   window.fmLockedHide       = fmLockedHide;
   window.fmLockedToSignup   = fmLockedToSignup;
   window.fmLockedToLogin    = fmLockedToLogin;
+}());
+</script>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════════
+// FORTIS MUSIC — PROFILE SYSTEM
+//
+// SUPABASE SQL MIGRATION (run once in Supabase SQL Editor):
+//   ALTER TABLE profiles
+//     ADD COLUMN IF NOT EXISTS display_name   TEXT,
+//     ADD COLUMN IF NOT EXISTS city           TEXT,
+//     ADD COLUMN IF NOT EXISTS country        TEXT,
+//     ADD COLUMN IF NOT EXISTS bio            TEXT,
+//     ADD COLUMN IF NOT EXISTS avatar_url     TEXT,
+//     ADD COLUMN IF NOT EXISTS cover_url      TEXT,
+//     ADD COLUMN IF NOT EXISTS fortis_contact BOOLEAN DEFAULT TRUE,
+//     ADD COLUMN IF NOT EXISTS meta           JSONB   DEFAULT '{}',
+//     ADD COLUMN IF NOT EXISTS username       TEXT,
+//     ADD COLUMN IF NOT EXISTS is_public      BOOLEAN DEFAULT FALSE;
+//
+// SUPABASE STORAGE: create bucket "profile-photos" (public) in the dashboard.
+// ══════════════════════════════════════════════════════════════════════════════
+(function () {
+  'use strict';
+
+  var GENRES = ['Rock','Electronic','Hip Hop','Jazz','Classical','Pop','R&B','Latin','Folk','Metal','Reggae','World'];
+  var DANCE_STYLES = ['Hip Hop','Ballet','Contemporary','Latin','Salsa','Tango','Breakdance','Jazz Dance','Ballroom','Modern'];
+  var COUNTRIES = ['Afghanistan','Albania','Algeria','Andorra','Angola','Antigua and Barbuda','Argentina','Armenia','Australia','Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bhutan','Bolivia','Bosnia and Herzegovina','Botswana','Brazil','Brunei','Bulgaria','Burkina Faso','Burundi','Cabo Verde','Cambodia','Cameroon','Canada','Central African Republic','Chad','Chile','China','Colombia','Comoros','Congo','Costa Rica','Croatia','Cuba','Cyprus','Czech Republic','Denmark','Djibouti','Dominica','Dominican Republic','Ecuador','Egypt','El Salvador','Equatorial Guinea','Eritrea','Estonia','Eswatini','Ethiopia','Fiji','Finland','France','Gabon','Gambia','Georgia','Germany','Ghana','Greece','Grenada','Guatemala','Guinea','Guinea-Bissau','Guyana','Haiti','Honduras','Hungary','Iceland','India','Indonesia','Iran','Iraq','Ireland','Israel','Italy','Jamaica','Japan','Jordan','Kazakhstan','Kenya','Kiribati','Kosovo','Kuwait','Kyrgyzstan','Laos','Latvia','Lebanon','Lesotho','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg','Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands','Mauritania','Mauritius','Mexico','Micronesia','Moldova','Monaco','Mongolia','Montenegro','Morocco','Mozambique','Myanmar','Namibia','Nauru','Nepal','Netherlands','New Zealand','Nicaragua','Niger','Nigeria','North Korea','North Macedonia','Norway','Oman','Pakistan','Palau','Palestine','Panama','Papua New Guinea','Paraguay','Peru','Philippines','Poland','Portugal','Qatar','Romania','Russia','Rwanda','Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines','Samoa','San Marino','Sao Tome and Principe','Saudi Arabia','Senegal','Serbia','Seychelles','Sierra Leone','Singapore','Slovakia','Slovenia','Solomon Islands','Somalia','South Africa','South Korea','South Sudan','Spain','Sri Lanka','Sudan','Suriname','Sweden','Switzerland','Syria','Taiwan','Tajikistan','Tanzania','Thailand','Timor-Leste','Togo','Tonga','Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Tuvalu','Uganda','Ukraine','United Arab Emirates','United Kingdom','United States','Uruguay','Uzbekistan','Vanuatu','Vatican City','Venezuela','Vietnam','Yemen','Zambia','Zimbabwe'];
+
+  // Role configuration: which fields/sections each role shows
+  var RC = {
+    'Fan':             { dn:false, cover:false, genres:false, dance:false, phone:false, addr:false, hours:false, cap:false, gigs:false, sched:false, equip:false, price:false, avail:false, brands:false, maps:false, web:false, soc:[] },
+    'Artist':          { dn:true,  dnL:'Artist / Band Name', cover:false, genres:true,  dance:false, phone:false, addr:false, hours:false, cap:false, gigs:false, sched:false, equip:false, price:false, avail:false, brands:false, maps:false, web:true,  soc:['instagram','youtube','spotify','soundcloud'] },
+    'DJ':              { dn:true,  dnL:'DJ Name',             cover:false, genres:true,  dance:false, phone:false, addr:false, hours:false, cap:false, gigs:true,  sched:false, equip:false, price:false, avail:false, brands:false, maps:false, web:false, soc:['instagram','youtube','soundcloud','mixcloud'] },
+    'Club/Bar':        { dn:true,  dnL:'Club / Bar Name',     cover:true,  genres:true,  dance:false, phone:true,  addr:true,  hours:true,  cap:true,  gigs:false, sched:false, equip:false, price:false, avail:false, brands:false, maps:true,  web:true,  soc:['instagram','facebook'] },
+    'Event Organizer': { dn:true,  dnL:'Organization Name',   cover:true,  genres:false, dance:false, phone:true,  addr:false, hours:false, cap:false, gigs:false, sched:false, equip:false, price:false, avail:false, brands:false, maps:false, web:true,  soc:['instagram','facebook'] },
+    'Dance Club':      { dn:true,  dnL:'Dance Club Name',     cover:true,  genres:false, dance:true,  phone:true,  addr:false, hours:false, cap:false, gigs:false, sched:true,  equip:false, price:false, avail:false, brands:false, maps:false, web:false, soc:['instagram','facebook'] },
+    'Music Studio':    { dn:true,  dnL:'Studio Name',         cover:true,  genres:false, dance:false, phone:true,  addr:true,  hours:false, cap:false, gigs:false, sched:false, equip:true,  price:true,  avail:true,  brands:false, maps:false, web:true,  soc:['instagram'] },
+    'Gear Store':      { dn:true,  dnL:'Store Name',          cover:true,  genres:false, dance:false, phone:true,  addr:false, hours:false, cap:false, gigs:false, sched:false, equip:false, price:false, avail:false, brands:true,  maps:false, web:true,  soc:['instagram','facebook'] }
+  };
+
+  var _pfPhotoFile = null;
+  var _pfCoverFile = null;
+  var _pfGenresSel = [];
+  var _pfDanceSel  = [];
+  var _pfRole      = 'Fan';
+
+  // Populate country select on load
+  document.addEventListener('DOMContentLoaded', function () {
+    var sel = document.getElementById('pfCountry');
+    if (!sel) return;
+    COUNTRIES.forEach(function (c) {
+      var opt = document.createElement('option');
+      opt.value = c; opt.textContent = c;
+      sel.appendChild(opt);
+    });
+  });
+
+  // ── Check profile completeness after auth ──────────────────────────────────
+  function fmCheckProfileComplete(event) {
+    var user = window._fmUser;
+    var pf   = window._fmProfile;
+    if (!user) return;
+    // Only prompt on fresh email confirmation or when clearly incomplete
+    var isNewConfirm = (event === 'SIGNED_IN' || event === 'INITIAL');
+    if (isNewConfirm && (!pf || !pf.city || !pf.country)) {
+      setTimeout(function () { fmProfileOpen(false); }, 400);
+    }
+  }
+
+  // ── Open overlay ───────────────────────────────────────────────────────────
+  function fmProfileOpen(isEdit) {
+    var pf = window._fmProfile || {};
+    _pfRole = pf.role || 'Fan';
+    _pfPhotoFile = null;
+    _pfCoverFile = null;
+
+    document.getElementById('fmProfileTitle').textContent     = isEdit ? 'Edit Profile' : 'Complete Your Profile';
+    document.getElementById('pfLaterRow').style.display       = isEdit ? 'none' : '';
+    document.getElementById('fmProfileCloseBtn').style.display = isEdit ? '' : (pf.city ? '' : 'none');
+
+    pfConfigRole(_pfRole);
+    pfFill(pf);
+    fmProgUpdate();
+
+    document.getElementById('fmProfileOverlay').classList.add('show');
+  }
+
+  function fmProfileClose() {
+    document.getElementById('fmProfileOverlay').classList.remove('show');
+  }
+
+  // ── Configure visible sections for role ───────────────────────────────────
+  function pfConfigRole(role) {
+    var c = RC[role] || RC['Fan'];
+    function tog(id, show) { var e = document.getElementById(id); if (e) e.style.display = show ? '' : 'none'; }
+
+    tog('pfDisplayNameSection', c.dn);
+    if (c.dn) {
+      document.getElementById('pfDisplayNameLabel').textContent = c.dnL;
+      document.getElementById('pfDisplayName').placeholder      = c.dnL;
+    }
+    tog('fmCoverSection',       c.cover);
+    tog('pfGenreSection',       c.genres);
+    tog('pfDanceStyleSection',  c.dance);
+    tog('pfPhoneSection',       c.phone);
+    tog('pfAddressSection',     c.addr);
+    tog('pfHoursSection',       c.hours);
+    tog('pfCapacitySection',    c.cap);
+    tog('pfMapsSection',        c.maps);
+    tog('pfGigsSection',        c.gigs);
+    tog('pfScheduleSection',    c.sched);
+    tog('pfEquipmentSection',   c.equip);
+    tog('pfPricingSection',     c.price);
+    tog('pfAvailabilitySection',c.avail);
+    tog('pfBrandsSection',      c.brands);
+    tog('pfWebsiteSection',     c.web);
+    tog('pfSocialSection',      c.soc.length > 0);
+    ['instagram','youtube','spotify','soundcloud','mixcloud','facebook'].forEach(function (s) {
+      tog('pfSocial_' + s, c.soc.indexOf(s) !== -1);
+    });
+  }
+
+  // ── Pre-fill form from profile data ───────────────────────────────────────
+  function pfFill(pf) {
+    var meta = pf.meta || {};
+    function v(id, val) { var e = document.getElementById(id); if (e) e.value = val || ''; }
+
+    v('pfDisplayName', pf.display_name);
+    v('pfCity',        pf.city);
+    v('pfBio',         pf.bio);
+    v('pfPhone',       meta.phone);
+    v('pfAddress',     meta.address);
+    v('pfHours',       meta.hours);
+    v('pfCapacity',    meta.capacity);
+    v('pfMaps',        meta.maps_link);
+    v('pfGigs',        meta.gigs);
+    v('pfSchedule',    meta.schedule);
+    v('pfEquipment',   meta.equipment);
+    v('pfPricing',     meta.pricing);
+    v('pfAvailability',meta.availability);
+    v('pfBrands',      meta.brands);
+    v('pfWebsite',     meta.website);
+    v('pfInstagram',   meta.instagram);
+    v('pfYoutube',     meta.youtube);
+    v('pfSpotify',     meta.spotify);
+    v('pfSoundcloud',  meta.soundcloud);
+    v('pfMixcloud',    meta.mixcloud);
+    v('pfFacebook',    meta.facebook);
+    v('pfPublicEmail', meta.public_email);
+    v('pfUsername',    pf.username);
+
+    // Country
+    var csel = document.getElementById('pfCountry');
+    if (csel && pf.country) csel.value = pf.country;
+
+    // Fortis contact toggle
+    var fc = document.getElementById('pfFortisContact');
+    if (fc) fc.checked = pf.fortis_contact !== false;
+    fmContactToggle();
+
+    // Username preview
+    pfUpdateUsernamePreview();
+
+    // Avatar
+    var ap = document.getElementById('fmAvatarPreview');
+    var al = document.getElementById('fmAvatarLetter');
+    if (pf.avatar_url && ap) {
+      ap.style.backgroundImage = 'url(' + pf.avatar_url + ')';
+      ap.style.backgroundSize = 'cover'; ap.style.backgroundPosition = 'center';
+      if (al) al.style.display = 'none';
+    } else if (al) {
+      ap.style.backgroundImage = '';
+      var name = pf.full_name || pf.email || '?';
+      al.textContent = name.charAt(0).toUpperCase();
+      al.style.display = '';
+    }
+
+    // Cover
+    var cp = document.getElementById('fmCoverPreview');
+    if (pf.cover_url && cp) {
+      cp.style.backgroundImage = 'url(' + pf.cover_url + ')';
+      cp.style.backgroundSize = 'cover'; cp.style.backgroundPosition = 'center';
+      var cs = cp.querySelector('span'); if (cs) cs.style.display = 'none';
+    }
+
+    // Chips
+    _pfGenresSel = (meta.genres || []).slice();
+    _pfDanceSel  = (meta.dance_styles || []).slice();
+    pfRenderChips('pfGenreChips', GENRES, _pfGenresSel, function (val) {
+      var i = _pfGenresSel.indexOf(val);
+      if (i === -1) _pfGenresSel.push(val); else _pfGenresSel.splice(i, 1);
+      fmProgUpdate();
+    });
+    pfRenderChips('pfDanceChips', DANCE_STYLES, _pfDanceSel, function (val) {
+      var i = _pfDanceSel.indexOf(val);
+      if (i === -1) _pfDanceSel.push(val); else _pfDanceSel.splice(i, 1);
+      fmProgUpdate();
+    });
+  }
+
+  function pfRenderChips(containerId, items, selected, onClick) {
+    var el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = '';
+    items.forEach(function (item) {
+      var chip = document.createElement('div');
+      chip.className = 'fm-chip' + (selected.indexOf(item) !== -1 ? ' sel' : '');
+      chip.textContent = item;
+      chip.onclick = function () { onClick(item); chip.classList.toggle('sel'); };
+      el.appendChild(chip);
+    });
+  }
+
+  // ── Progress bar ──────────────────────────────────────────────────────────
+  function fmProgUpdate() {
+    var c = RC[_pfRole] || RC['Fan'];
+    var total = 0, filled = 0;
+
+    function count(id, w) {
+      total += w;
+      var e = document.getElementById(id);
+      if (e && e.value && e.value.trim()) filled += w;
+    }
+    count('pfCity',        2);
+    count('pfCountry',     2);
+    count('pfBio',         1);
+    if (c.dn)    count('pfDisplayName', 2);
+    if (c.phone) count('pfPhone',       1);
+    if (c.addr)  count('pfAddress',     1);
+    if (c.hours) count('pfHours',       1);
+    if (c.web)   count('pfWebsite',     1);
+    if (c.price) count('pfPricing',     1);
+    if (c.brands)count('pfBrands',      1);
+
+    if (c.genres) { total += 1; if (_pfGenresSel.length) filled += 1; }
+    if (c.dance)  { total += 1; if (_pfDanceSel.length)  filled += 1; }
+
+    // Photo
+    total += 1;
+    var ap = document.getElementById('fmAvatarPreview');
+    if (_pfPhotoFile || (ap && ap.style.backgroundImage && ap.style.backgroundImage !== 'none' && ap.style.backgroundImage !== '')) filled += 1;
+
+    var pct = total ? Math.round(filled / total * 100) : 0;
+    var fill = document.getElementById('fmProgFill');
+    var text = document.getElementById('fmProgText');
+    if (fill) { fill.style.width = pct + '%'; fill.style.background = pct >= 80 ? '#00E676' : pct >= 50 ? '#7B2FFF' : 'var(--grad)'; }
+    if (text) text.textContent = pct + '% complete';
+
+    pfUpdateUsernamePreview();
+    return pct;
+  }
+
+  function pfUpdateUsernamePreview() {
+    var uname = (document.getElementById('pfUsername') || {}).value || '';
+    var role  = _pfRole || 'Fan';
+    var SLUGS = {'Artist':'artist','DJ':'dj','Fan':'fan','Club/Bar':'club-bar',
+                 'Event Organizer':'event-organizer','Dance Club':'dance-club',
+                 'Music Studio':'music-studio','Gear Store':'gear-store'};
+    var prev = document.getElementById('pfUsernamePreview');
+    if (prev) prev.textContent = uname ? 'fortismusic.co/' + (SLUGS[role]||'user') + '/' + uname : '';
+  }
+
+  // ── Fortis contact toggle ─────────────────────────────────────────────────
+  function fmContactToggle() {
+    var checked = document.getElementById('pfFortisContact').checked;
+    var warn    = document.getElementById('pfContactWarn');
+    var pubMail = document.getElementById('pfPublicEmailSection');
+    if (warn)    warn.style.display    = 'none';
+    if (pubMail) pubMail.style.display = checked ? 'none' : '';
+  }
+
+  // ── Photo preview ─────────────────────────────────────────────────────────
+  function fmPhotoPreview(input, previewId, letterId) {
+    var file = input.files[0]; if (!file) return;
+    if (previewId === 'fmAvatarPreview') _pfPhotoFile = file;
+    else                                 _pfCoverFile = file;
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var el = document.getElementById(previewId);
+      if (!el) return;
+      el.style.backgroundImage    = 'url(' + e.target.result + ')';
+      el.style.backgroundSize     = 'cover';
+      el.style.backgroundPosition = 'center';
+      if (letterId) { var l = document.getElementById(letterId); if (l) l.style.display = 'none'; }
+      else { var s = el.querySelector('span'); if (s) s.style.display = 'none'; }
+      fmProgUpdate();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── Auto-generate username ────────────────────────────────────────────────
+  function fmGenerateUsername() {
+    var base = '';
+    var dn = document.getElementById('pfDisplayName');
+    if (dn && dn.value.trim()) base = dn.value.trim();
+    else if (window._fmUser) base = window._fmUser.email.split('@')[0];
+    var clean = base.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    var el = document.getElementById('pfUsername');
+    if (el) { el.value = clean; fmProgUpdate(); }
+  }
+
+  // ── Validate contact rule ─────────────────────────────────────────────────
+  function pfContactOk() {
+    var fc = document.getElementById('pfFortisContact');
+    if (fc && fc.checked) return true;
+    var ids = ['pfPhone','pfWebsite','pfPublicEmail','pfInstagram','pfYoutube','pfSpotify','pfSoundcloud','pfMixcloud','pfFacebook'];
+    return ids.some(function (id) { var e = document.getElementById(id); return e && e.value.trim(); });
+  }
+
+  // ── Save profile ──────────────────────────────────────────────────────────
+  function fmProfileSave() {
+    var err = document.getElementById('pfError');
+    var warn = document.getElementById('pfContactWarn');
+    err.style.display  = 'none';
+    warn.style.display = 'none';
+
+    var city    = (document.getElementById('pfCity')    || {}).value || '';
+    var country = (document.getElementById('pfCountry') || {}).value || '';
+    var bio     = (document.getElementById('pfBio')     || {}).value || '';
+    var dn      = (document.getElementById('pfDisplayName') || {}).value || '';
+    var fc      = document.getElementById('pfFortisContact');
+    var fortisContact = fc ? fc.checked : true;
+    var username = ((document.getElementById('pfUsername') || {}).value || '').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+
+    if (!city.trim())    { err.textContent = 'City is required.';    err.style.display = 'block'; return; }
+    if (!country)        { err.textContent = 'Country is required.'; err.style.display = 'block'; return; }
+    if (!pfContactOk())  { warn.style.display = 'block'; return; }
+
+    function gv(id) { var e = document.getElementById(id); return e && e.value.trim() ? e.value.trim() : null; }
+    var meta = {};
+    var metaKeys = [['pfPhone','phone'],['pfAddress','address'],['pfHours','hours'],['pfCapacity','capacity'],
+      ['pfMaps','maps_link'],['pfGigs','gigs'],['pfSchedule','schedule'],['pfEquipment','equipment'],
+      ['pfPricing','pricing'],['pfAvailability','availability'],['pfBrands','brands'],['pfWebsite','website'],
+      ['pfInstagram','instagram'],['pfYoutube','youtube'],['pfSpotify','spotify'],['pfSoundcloud','soundcloud'],
+      ['pfMixcloud','mixcloud'],['pfFacebook','facebook'],['pfPublicEmail','public_email']];
+    metaKeys.forEach(function (k) { var v = gv(k[0]); if (v) meta[k[1]] = v; });
+    if (_pfGenresSel.length) meta.genres      = _pfGenresSel;
+    if (_pfDanceSel.length)  meta.dance_styles = _pfDanceSel;
+
+    var btn = document.getElementById('pfSaveBtn');
+    btn.disabled = true; btn.textContent = 'Saving…';
+
+    var sb   = window._sb;
+    var user = window._fmUser;
+    if (!sb || !user) { err.textContent = 'Not logged in.'; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Save Profile →'; return; }
+
+    Promise.all([
+      _pfPhotoFile ? pfUpload(_pfPhotoFile, 'avatar') : Promise.resolve(null),
+      _pfCoverFile ? pfUpload(_pfCoverFile, 'cover')  : Promise.resolve(null)
+    ]).then(function (urls) {
+      var data = {
+        city: city.trim(), country: country, bio: bio.trim() || null,
+        display_name: dn.trim() || null, fortis_contact: fortisContact,
+        meta: meta, username: username || null,
+        is_public: !!(city.trim() && country)
+      };
+      if (urls[0]) data.avatar_url = urls[0];
+      if (urls[1]) data.cover_url  = urls[1];
+      return sb.from('profiles').update(data).eq('id', user.id);
+    }).then(function (r) {
+      btn.disabled = false; btn.textContent = 'Save Profile →';
+      if (r && r.error) {
+        err.textContent = r.error.message + ' (Run SQL migration in Supabase dashboard)';
+        err.style.display = 'block'; return;
+      }
+      // Reload profile from Supabase
+      sb.from('profiles').select('*').eq('id', user.id).single().then(function (r2) {
+        if (r2.data) { window._fmProfile = r2.data; if (typeof fmAuthUIUpdate === 'function') fmAuthUIUpdate(); }
+      });
+      fmProfileClose();
+      if (typeof showToast === 'function') showToast('Profile saved!');
+    }).catch(function (ex) {
+      btn.disabled = false; btn.textContent = 'Save Profile →';
+      err.textContent = (ex && ex.message) || 'Save failed. Check Supabase migration.';
+      err.style.display = 'block';
+    });
+  }
+
+  // ── Upload photo to Supabase Storage ──────────────────────────────────────
+  function pfUpload(file, type) {
+    var sb = window._sb; var user = window._fmUser;
+    if (!sb || !user) return Promise.resolve(null);
+    var ext  = file.name.split('.').pop().toLowerCase();
+    var path = user.id + '/' + type + '-' + Date.now() + '.' + ext;
+    return sb.storage.from('profile-photos').upload(path, file, { upsert: true })
+      .then(function (r) {
+        if (r.error) { console.warn('Photo upload failed:', r.error.message); return null; }
+        return sb.storage.from('profile-photos').getPublicUrl(path).data.publicUrl;
+      }).catch(function () { return null; });
+  }
+
+  // ── Public profile render ─────────────────────────────────────────────────
+  function fmShowPublicProfile(userId) {
+    var sb = window._sb; if (!sb) return;
+    var inner = document.getElementById('pubProfileInner');
+    if (inner) inner.innerHTML = '<div style="color:var(--muted);padding:60px 0;text-align:center;">Loading…</div>';
+    if (typeof showPage === 'function') showPage('pub-profile');
+    sb.from('profiles').select('*').eq('id', userId).single().then(function (r) {
+      if (!r.data || !r.data.is_public) {
+        if (inner) inner.innerHTML = '<div style="color:var(--muted);padding:60px 0;text-align:center;">Profile not found or not public yet.</div>';
+      } else { pfRenderPublic(r.data); }
+    });
+  }
+
+  function pfRenderPublic(p) {
+    var inner = document.getElementById('pubProfileInner');
+    if (!inner) return;
+    var meta = p.meta || {};
+    var SLUGS = {'Artist':'artist','DJ':'dj','Fan':'fan','Club/Bar':'club-bar','Event Organizer':'event-organizer','Dance Club':'dance-club','Music Studio':'music-studio','Gear Store':'gear-store'};
+    var slug = SLUGS[p.role] || 'user';
+    var h = '';
+
+    // Cover
+    if (p.cover_url) h += '<div style="height:220px;border-radius:16px;background:url(' + p.cover_url + ') center/cover;margin-bottom:0;border:1px solid var(--border);"></div>';
+
+    // Header card
+    h += '<div class="fm-pub-header">';
+    if (p.avatar_url) h += '<div class="fm-pub-avatar" style="background-image:url(' + p.avatar_url + ');background-size:cover;background-position:center;"></div>';
+    else { var ltr = (p.display_name||p.full_name||p.email||'?').charAt(0).toUpperCase(); h += '<div class="fm-pub-avatar fm-pub-avatar-letter">' + ltr + '</div>'; }
+    h += '<div class="fm-pub-name-block">';
+    h += '<div class="fm-pub-name">' + (p.display_name || p.full_name || '') + '</div>';
+    if (p.full_name && p.display_name && p.full_name !== p.display_name) h += '<div style="font-size:0.8rem;color:var(--muted);margin-top:2px;">' + p.full_name + '</div>';
+    h += '<span class="fm-pub-role-badge">' + (p.role||'') + '</span>';
+    if (p.city||p.country) h += '<div class="fm-pub-location"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ' + [p.city,p.country].filter(Boolean).join(', ') + '</div>';
+    h += '</div></div>';
+
+    if (p.bio) h += '<div class="fm-pub-bio">' + p.bio.replace(/\n/g,'<br>') + '</div>';
+
+    if (meta.genres && meta.genres.length) {
+      h += '<div class="fm-pub-section-label">Genres</div><div class="fm-pub-chips">';
+      meta.genres.forEach(function(g){h+='<span class="fm-pub-chip">'+g+'</span>';});
+      h += '</div>';
+    }
+    if (meta.dance_styles && meta.dance_styles.length) {
+      h += '<div class="fm-pub-section-label">Dance Styles</div><div class="fm-pub-chips">';
+      meta.dance_styles.forEach(function(s){h+='<span class="fm-pub-chip">'+s+'</span>';});
+      h += '</div>';
+    }
+    if (meta.address)     h += '<div class="fm-pub-detail"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ' + meta.address + '</div>';
+    if (meta.hours)       h += '<div class="fm-pub-detail">&#128336; ' + meta.hours + '</div>';
+    if (meta.capacity)    h += '<div class="fm-pub-detail">&#128101; Capacity: ' + meta.capacity + '</div>';
+    if (meta.pricing)     h += '<div class="fm-pub-detail">&#128176; ' + meta.pricing + '</div>';
+    if (meta.brands)      h += '<div class="fm-pub-detail">&#127981; ' + meta.brands + '</div>';
+    if (meta.gigs)        h += '<div class="fm-pub-section-label">Upcoming Gigs</div><div class="fm-pub-text-block">' + meta.gigs.replace(/\n/g,'<br>') + '</div>';
+    if (meta.schedule)    h += '<div class="fm-pub-section-label">Class Schedule</div><div class="fm-pub-text-block">' + meta.schedule.replace(/\n/g,'<br>') + '</div>';
+    if (meta.equipment)   h += '<div class="fm-pub-section-label">Equipment</div><div class="fm-pub-text-block">' + meta.equipment.replace(/\n/g,'<br>') + '</div>';
+    if (meta.availability)h += '<div class="fm-pub-section-label">Availability</div><div class="fm-pub-text-block">' + meta.availability.replace(/\n/g,'<br>') + '</div>';
+
+    // Contact
+    h += '<div class="fm-pub-section-label">Contact</div><div class="fm-pub-contact">';
+    if (p.fortis_contact !== false) h += '<button class="gate-submit fm-pub-contact-btn" onclick="alert(\'Fortis contact form — coming soon.\')">&#x1F4AC; Send Message via Fortis</button>';
+    if (meta.public_email) h += '<a class="fm-pub-contact-link" href="mailto:' + meta.public_email + '">&#x2709; ' + meta.public_email + '</a>';
+    if (meta.phone)  h += '<a class="fm-pub-contact-link" href="tel:' + meta.phone + '">&#128222; ' + meta.phone + '</a>';
+    if (meta.website)h += '<a class="fm-pub-contact-link" href="' + meta.website + '" target="_blank" rel="noopener">&#127760; ' + meta.website + '</a>';
+    if (meta.maps_link) h += '<a class="fm-pub-contact-link" href="' + meta.maps_link + '" target="_blank" rel="noopener">&#128205; Google Maps</a>';
+    h += '</div>';
+
+    var socPairs = [['instagram','IG',meta.instagram],['youtube','YT',meta.youtube],['spotify','SP',meta.spotify],['soundcloud','SC',meta.soundcloud],['mixcloud','MC',meta.mixcloud],['facebook','FB',meta.facebook]].filter(function(s){return s[2];});
+    if (socPairs.length) {
+      h += '<div class="fm-pub-section-label">Social</div><div class="fm-pub-socials">';
+      socPairs.forEach(function(s){h+='<a class="fm-pub-social-btn" href="'+s[2]+'" target="_blank" rel="noopener">'+s[1]+'</a>';});
+      h += '</div>';
+    }
+    h += '<div class="fm-pub-url">fortismusic.co/' + slug + '/' + (p.username || p.id.substring(0,8)) + '</div>';
+    inner.innerHTML = h;
+  }
+
+  // ── Hash routing ──────────────────────────────────────────────────────────
+  function pfHandleHash() {
+    var hash  = window.location.hash.replace('#','');
+    var parts = hash.split('/');
+    if (parts.length < 2 || !parts[1]) return;
+    var username = parts[1];
+    var sb = window._sb; if (!sb) return;
+    sb.from('profiles').select('*').eq('username', username).eq('is_public', true).single()
+      .then(function (r) {
+        if (r.data) pfRenderPublic(r.data);
+        else if (typeof showToast === 'function') showToast('Profile not found.');
+        if (typeof showPage === 'function') showPage('pub-profile');
+      });
+  }
+  window.addEventListener('hashchange', pfHandleHash);
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.location.hash && window.location.hash.length > 2) pfHandleHash();
+  });
+
+  // ── Override fmGoProfile from auth module ─────────────────────────────────
+  window.fmGoProfile = function () {
+    if (typeof window.fmAvatarClose === 'function') window.fmAvatarClose();
+    fmProfileOpen(true);
+  };
+
+  // ── Expose globals ────────────────────────────────────────────────────────
+  window.fmCheckProfileComplete = fmCheckProfileComplete;
+  window.fmProfileOpen          = fmProfileOpen;
+  window.fmProfileClose         = fmProfileClose;
+  window.fmProfileSave          = fmProfileSave;
+  window.fmProgUpdate           = fmProgUpdate;
+  window.fmContactToggle        = fmContactToggle;
+  window.fmPhotoPreview         = fmPhotoPreview;
+  window.fmGenerateUsername     = fmGenerateUsername;
+  window.fmShowPublicProfile    = fmShowPublicProfile;
 }());
 </script>
 </body>
