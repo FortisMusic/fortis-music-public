@@ -31,32 +31,25 @@
       </span>
       <span style="font-weight:500;font-size:0.88rem;color:rgba(255,255,255,0.9);white-space:nowrap;padding-left:11px;">Live</span>
     </a>
-    <a onclick="showPage('about')">About</a>
-    <a onclick="showPage('upload');switchProtectTab('protect')" style="flex-direction:column;align-items:center;gap:1px;line-height:1.3;text-align:center;padding:4px 12px;">
-      <span style="font-weight:500;font-size:0.88rem;color:rgba(255,255,255,0.9);">Protection</span>
-      <span style="font-weight:500;font-size:0.88rem;color:rgba(255,255,255,0.9);">Detection</span>
-    </a>
-    <a onclick="showPage('artist')">Artist</a>
-    <a onclick="showPage('fan')">Fan</a>
-    <a onclick="showPage('dj')">DJs</a>
     <a onclick="showPage('discover')">Discover</a>
-    <a onclick="showPage('studio')" style="flex-direction:column;align-items:center;gap:1px;line-height:1.3;text-align:center;padding:4px 12px;">
-      <span style="font-weight:500;font-size:0.88rem;color:rgba(255,255,255,0.9);">Music</span>
-      <span style="font-weight:500;font-size:0.88rem;color:rgba(255,255,255,0.9);">Studio</span>
-    </a>
-    <a onclick="showPage('gear')" style="flex-direction:column;align-items:center;gap:1px;line-height:1.3;text-align:center;padding:4px 12px;">
-      <span style="font-weight:500;font-size:0.88rem;color:rgba(255,255,255,0.9);">Gear</span>
-      <span style="font-weight:500;font-size:0.88rem;color:rgba(255,255,255,0.9);">Store</span>
-    </a>
     <a onclick="showPage('dance')" style="flex-direction:column;align-items:center;gap:1px;line-height:1.3;text-align:center;padding:4px 12px;">
       <span style="font-weight:500;font-size:0.88rem;color:rgba(255,255,255,0.9);">Dance</span>
       <span style="font-weight:500;font-size:0.88rem;color:rgba(255,255,255,0.9);">Team</span>
+    </a>
+    <a onclick="showPage('studio')" style="flex-direction:column;align-items:center;gap:1px;line-height:1.3;text-align:center;padding:4px 12px;">
+      <span style="font-weight:500;font-size:0.88rem;color:rgba(255,255,255,0.9);">Music</span>
+      <span style="font-weight:500;font-size:0.88rem;color:rgba(255,255,255,0.9);">Studio</span>
     </a>
     <a onclick="showPage('clubs')" style="flex-direction:column;align-items:center;gap:1px;line-height:1.3;text-align:center;padding:4px 12px;">
       <span style="font-weight:500;font-size:0.88rem;color:rgba(255,255,255,0.9);">Clubs</span>
       <span style="font-weight:500;font-size:0.88rem;color:rgba(255,255,255,0.9);">Bars</span>
     </a>
     <a onclick="showPage('events')">Events</a>
+    <a onclick="showPage('gear')" style="flex-direction:column;align-items:center;gap:1px;line-height:1.3;text-align:center;padding:4px 12px;">
+      <span style="font-weight:500;font-size:0.88rem;color:rgba(255,255,255,0.9);">Gear</span>
+      <span style="font-weight:500;font-size:0.88rem;color:rgba(255,255,255,0.9);">Store</span>
+    </a>
+    <a onclick="showPage('about')">About</a>
     <a onclick="showPage('contact')">Contact</a>
   </div>
   <button class="nav-btn" onclick="gateOpen()">
@@ -3670,13 +3663,6 @@
     <span>Live</span>
   </button>
 
-  <button class="mob-nav-item" id="mob-btn-upload" onclick="mobNav('upload')" aria-label="Protect">
-    <div class="mob-nav-icon">
-      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-    </div>
-    <span>Protect</span>
-  </button>
-
   <button class="mob-nav-item" id="mob-btn-discover" onclick="mobNav('discover')" aria-label="Discover">
     <div class="mob-nav-icon">
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -3796,41 +3782,6 @@
     </div>
   </div>
 
-  <div class="mob-swipe-hint"></div>
-
-  <!-- ── RIGHTS & PROTECTION ── -->
-  <div class="mob-drawer-section">
-    <div class="mob-drawer-section-label">Rights &amp; Protection</div>
-    <div class="mob-drawer-grid">
-
-      <div class="mob-drawer-row">
-        <!-- PROTECTION & DETECTION — full width -->
-        <button class="mob-drawer-btn" id="mdb-upload" onclick="mobNavDrawer('upload')" style="--mob-accent:#C8A97E; --mob-icon-color:#C8A97E;">
-          <div class="mob-drawer-btn-icon">
-            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <div class="mob-drawer-btn-text">
-            <span class="mob-drawer-btn-label">Protection & Detection</span>
-            <span class="mob-drawer-btn-sub">Blockchain · Fingerprint · Rights</span>
-          </div>
-        </button>
-      </div>
-
-      <div class="mob-drawer-row row-1-2">
-        <!-- ABOUT — wide -->
-        <button class="mob-drawer-btn" id="mdb-about" onclick="mobNavDrawer('about')" style="--mob-accent:rgba(255,255,255,0.2); --mob-icon-color:rgba(200,180,255,0.62);">
-          <div class="mob-drawer-btn-icon">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          </div>
-          <div class="mob-drawer-btn-text">
-            <span class="mob-drawer-btn-label">About Fortis</span>
-            <span class="mob-drawer-btn-sub">Mission · Team</span>
-          </div>
-        </button>
-      </div>
-
-    </div>
-  </div>
 
   <div class="mob-swipe-hint"></div>
 
@@ -3890,7 +3841,21 @@
             <span class="mob-drawer-btn-sub">Equipment · Merch</span>
           </div>
         </button>
+      
+
+      <div class="mob-drawer-row">
+        <button class="mob-drawer-btn" id="mdb-about" onclick="mobNavDrawer('about')" style="--mob-accent:rgba(255,255,255,0.2); --mob-icon-color:rgba(200,180,255,0.62);">
+          <div class="mob-drawer-btn-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div class="mob-drawer-btn-text">
+            <span class="mob-drawer-btn-label">About Fortis</span>
+            <span class="mob-drawer-btn-sub">Mission · Team</span>
+          </div>
+        </button>
       </div>
+
+    </div>
 
     </div>
   </div>
