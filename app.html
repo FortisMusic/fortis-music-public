@@ -4250,7 +4250,7 @@
     if (!fullName) { err.textContent = 'Please enter your full name.'; err.style.display = 'block'; return; }
     if (pass.length < 6) { err.textContent = 'Password must be at least 6 characters.'; err.style.display = 'block'; return; }
     btn.disabled = true; btn.textContent = 'Creating account…';
-    _sb.auth.signUp({ email: email, password: pass }).then(function (r) {
+    _sb.auth.signUp({ email: email, password: pass, options: { data: { role: role, display_name: (document.getElementById('fmSignupDN') ? document.getElementById('fmSignupDN').value.trim() : '') || null } } }).then(function (r) {
       if (r.error) {
         btn.disabled = false; btn.textContent = 'Create Account →';
         err.textContent = r.error.message; err.style.display = 'block';
@@ -4394,6 +4394,7 @@
     var user = window._fmUser;
     var pf   = window._fmProfile;
     if (!user) return;
+    if (localStorage.getItem('fm_pf_done_' + user.id)) return;
     var isNewConfirm = (event === 'SIGNED_IN' || event === 'INITIAL' || event === 'INITIAL_SESSION' || event === 'EMAIL_CONFIRMED');
     if (isNewConfirm && (!pf || !pf.city || !pf.country)) {
       if (_profilePromptFired) return;
@@ -4413,8 +4414,9 @@
     var gate = document.getElementById('gateOverlay');
     if (gate) gate.style.display = 'none';
 
-    var pf = window._fmProfile || {};
-    _pfRole = pf.role || 'Fan';
+    var pf    = window._fmProfile || {};
+    var _umeta = (window._fmUser && window._fmUser.user_metadata) ? window._fmUser.user_metadata : {};
+    _pfRole = pf.role || _umeta.role || 'Fan';
     _pfPhotoFile = null;
     _pfCoverFile = null;
 
@@ -4427,6 +4429,18 @@
     fmProgUpdate();
 
     overlay.classList.add('show');
+
+    // Auto-detect country via IP if not already set
+    var cselAuto = document.getElementById('pfCountry');
+    if (cselAuto && !cselAuto.value) {
+      fetch('https://ipapi.co/json/').then(function (r) { return r.json(); }).then(function (d) {
+        var cs = document.getElementById('pfCountry');
+        if (d && d.country_name && cs && !cs.value) {
+          cs.value = d.country_name;
+          if (typeof fmProgUpdate === 'function') fmProgUpdate();
+        }
+      }).catch(function () {});
+    }
   }
 
   function fmProfileClose() {
@@ -4469,7 +4483,9 @@
     var meta = pf.meta || {};
     function v(id, val) { var e = document.getElementById(id); if (e) e.value = val || ''; }
 
-    v('pfDisplayName', pf.display_name);
+    var _umeta2 = (window._fmUser && window._fmUser.user_metadata) ? window._fmUser.user_metadata : {};
+    var _dnVal  = pf.display_name || _umeta2.display_name || '';
+    v('pfDisplayName', _dnVal);
     v('pfCity',        pf.city);
     v('pfBio',         pf.bio);
     v('pfPhone',       meta.phone);
@@ -4492,6 +4508,11 @@
     v('pfFacebook',    meta.facebook);
     v('pfPublicEmail', meta.public_email);
     v('pfUsername',    pf.username);
+    // Pre-fill username from display_name slug if username not yet saved
+    if (!pf.username && _dnVal) {
+      var uEl = document.getElementById('pfUsername');
+      if (uEl && !uEl.value) uEl.value = _dnVal.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
 
     // Country
     var csel = document.getElementById('pfCountry');
@@ -4712,6 +4733,7 @@
         if (r2.data) { window._fmProfile = r2.data; if (typeof fmAuthUIUpdate === 'function') fmAuthUIUpdate(); }
       });
       fmProfileClose();
+      if (user) localStorage.setItem('fm_pf_done_' + user.id, '1');
       if (typeof showToast === 'function') showToast('Profile saved!');
     }).catch(function (ex) {
       btn.disabled = false; btn.textContent = 'Save Profile →';
@@ -4831,7 +4853,13 @@
   // ── Override fmGoProfile from auth module ─────────────────────────────────
   window.fmGoProfile = function () {
     if (typeof window.fmAvatarClose === 'function') window.fmAvatarClose();
-    fmProfileOpen(true);
+    var pf   = window._fmProfile || {};
+    var user = window._fmUser;
+    if (user && pf.city && pf.country) {
+      fmShowPublicProfile(user.id);
+    } else {
+      fmProfileOpen(true);
+    }
   };
 
   // ── Expose globals ────────────────────────────────────────────────────────
