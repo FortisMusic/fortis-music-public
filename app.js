@@ -160,7 +160,7 @@ function showPage(id) {
     }
   });
   window.scrollTo(0, 0);
-  if (id === 'discover') setTimeout(filterArtists, 50);
+  if (id === 'discover') loadDiscoverProfiles(filterArtists);
   if (id === 'gear') setTimeout(function(){ renderGearCards(); }, 50);
   if (id === 'studio') setTimeout(renderStudioCards, 50);
   if (id === 'dance') setTimeout(renderDanceCards, 50);
@@ -637,6 +637,40 @@ const ARTISTS_DB = [
 ];
 
 let currentDiscoverView = 'grid';
+var LIVE_PROFILES = [];
+
+function loadDiscoverProfiles(cb) {
+  var sb = window._sb;
+  if (!sb) { if (cb) cb(); return; }
+  LIVE_PROFILES = [];
+  sb.from('profiles')
+    .select('id,full_name,display_name,role,country,city,meta,avatar_url,username')
+    .eq('is_public', true)
+    .then(function(r) {
+      if (r.data && r.data.length) {
+        LIVE_PROFILES = r.data.map(function(p) {
+          var genres = (p.meta && p.meta.genres && p.meta.genres.length) ? p.meta.genres.join(', ') : '';
+          return {
+            id:        p.id,
+            name:      p.display_name || p.full_name,
+            type:      p.role,
+            genre:     genres,
+            country:   p.country || '',
+            city:      p.city || '',
+            followers: '—',
+            streams:   '—',
+            verified:  false,
+            protected: false,
+            emoji:     '🎵',
+            username:  p.username,
+            isLive:    true,
+            avatar_url: p.avatar_url
+          };
+        });
+      }
+      if (cb) cb();
+    }).catch(function() { if (cb) cb(); });
+}
 
 function renderDiscoverCards(data) {
   const grid = document.getElementById('discoverGrid');
@@ -650,7 +684,8 @@ function renderDiscoverCards(data) {
       const initials = a.name.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();
       const colors = ['#7B2FFF','#C8A97E','#00E676','#E91E8C','#3B82F6'];
       const col = colors[Math.abs(a.name.charCodeAt(0) + a.name.charCodeAt(1)) % colors.length];
-      return '<div class="discover-card" onclick="showPage(\'artist\')">'
+      const cardClick = a.isLive && a.id ? 'if(window.fmShowPublicProfile)window.fmShowPublicProfile("'+a.id+'")' : 'showPage(\'artist\')';
+      return '<div class="discover-card" onclick="'+cardClick+'">'
         + '<div style="padding:24px 20px 16px;text-align:center;border-bottom:1px solid rgba(200,180,255,0.07);">'
         + '<div style="width:56px;height:56px;border-radius:50%;background:rgba(200,180,255,0.09);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-family:\'Inter\',sans-serif;font-weight:700;font-size:1rem;margin:0 auto 12px;color:'+col+';">'+initials+'</div>'
         + '<div style="font-weight:700;font-size:0.9rem;margin-bottom:3px;letter-spacing:-0.01em;">'+a.name+'</div>'
@@ -671,7 +706,8 @@ function renderDiscoverCards(data) {
       const initials = a.name.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();
       const colors = ['#7B2FFF','#C8A97E','#00E676','#E91E8C','#3B82F6'];
       const col = colors[Math.abs(a.name.charCodeAt(0) + a.name.charCodeAt(1)) % colors.length];
-      return '<div class="discover-card" style="display:flex;align-items:center;gap:14px;padding:14px 18px;" onclick="showPage(\'artist\')">'
+      const cardClick = a.isLive && a.id ? 'if(window.fmShowPublicProfile)window.fmShowPublicProfile("'+a.id+'")' : 'showPage(\'artist\')';
+      return '<div class="discover-card" style="display:flex;align-items:center;gap:14px;padding:14px 18px;" onclick="'+cardClick+'">'
         + '<div style="width:40px;height:40px;border-radius:50%;background:rgba(200,180,255,0.07);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-family:\'Inter\',sans-serif;font-weight:700;font-size:0.82rem;flex-shrink:0;color:'+col+';">'+initials+'</div>'
         + '<div style="flex:1;"><div style="font-weight:600;font-size:0.88rem;margin-bottom:2px;">'+a.name+'</div><div style="font-size:0.72rem;color:rgba(200,180,255,0.55);">'+a.type+' · '+a.genre+' · '+a.city+'</div></div>'
         + '<div style="font-size:0.72rem;color:#C8A97E;font-weight:500;min-width:64px;text-align:right;">'+a.streams+'<div style="color:rgba(255,255,255,0.2);font-size:0.64rem;">streams</div></div>'
@@ -687,10 +723,11 @@ function filterArtists() {
   const genre = document.getElementById('filterGenre') ? document.getElementById('filterGenre').value : '';
   const type = document.getElementById('filterType') ? document.getElementById('filterType').value : '';
   const verified = document.getElementById('filterVerified') ? document.getElementById('filterVerified').value : '';
-  let results = ARTISTS_DB.filter(function(a) {
+  var source = LIVE_PROFILES.length ? LIVE_PROFILES : ARTISTS_DB;
+  let results = source.filter(function(a) {
     if (q && !a.name.toLowerCase().includes(q) && !a.genre.toLowerCase().includes(q) && !a.city.toLowerCase().includes(q)) return false;
-    if (country && !a.country.includes(country)) return false;
-    if (genre && a.genre !== genre) return false;
+    if (country && a.country !== country) return false;
+    if (genre && a.genre.indexOf(genre) === -1) return false;
     if (type && a.type !== type) return false;
     if (verified === 'verified' && !a.verified) return false;
     if (verified === 'protected' && !a.protected) return false;
