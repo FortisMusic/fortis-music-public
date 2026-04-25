@@ -4129,6 +4129,7 @@
 
   _sb.auth.onAuthStateChange(function (event, session) {
     _fmUser = session ? session.user : null;
+    if (!_fmUser) { typeof window._fmResetProfilePrompt === 'function' && window._fmResetProfilePrompt(); }
     if (_fmUser) { fmLoadProfile(function() { fmAuthUIUpdate(); typeof window.fmCheckProfileComplete==='function' && window.fmCheckProfileComplete(event); }); }
     else { _fmProfile = null; fmAuthUIUpdate(); }
   });
@@ -4361,33 +4362,45 @@
   });
 
   // ── Check profile completeness after auth ──────────────────────────────────
+  var _profilePromptFired = false;
+
   function fmCheckProfileComplete(event) {
     var user = window._fmUser;
     var pf   = window._fmProfile;
     if (!user) return;
-    // Only prompt on fresh email confirmation or when clearly incomplete
-    var isNewConfirm = (event === 'SIGNED_IN' || event === 'INITIAL');
+    var isNewConfirm = (event === 'SIGNED_IN' || event === 'INITIAL' || event === 'INITIAL_SESSION' || event === 'EMAIL_CONFIRMED');
     if (isNewConfirm && (!pf || !pf.city || !pf.country)) {
-      setTimeout(function () { fmProfileOpen(false); }, 400);
+      if (_profilePromptFired) return;
+      _profilePromptFired = true;
+      setTimeout(function () { fmProfileOpen(false); }, 600);
     }
   }
 
   // ── Open overlay ───────────────────────────────────────────────────────────
   function fmProfileOpen(isEdit) {
+    var overlay = document.getElementById('fmProfileOverlay');
+    if (!overlay) return;
+    // Don't reset form if auto-open and overlay is already showing
+    if (!isEdit && overlay.classList.contains('show')) return;
+
+    // Close auth gate if still open
+    var gate = document.getElementById('gateOverlay');
+    if (gate) gate.style.display = 'none';
+
     var pf = window._fmProfile || {};
     _pfRole = pf.role || 'Fan';
     _pfPhotoFile = null;
     _pfCoverFile = null;
 
-    document.getElementById('fmProfileTitle').textContent     = isEdit ? 'Edit Profile' : 'Complete Your Profile';
-    document.getElementById('pfLaterRow').style.display       = isEdit ? 'none' : '';
+    document.getElementById('fmProfileTitle').textContent      = isEdit ? 'Edit Profile' : 'Complete Your Profile';
+    document.getElementById('pfLaterRow').style.display        = isEdit ? 'none' : '';
     document.getElementById('fmProfileCloseBtn').style.display = isEdit ? '' : (pf.city ? '' : 'none');
 
     pfConfigRole(_pfRole);
     pfFill(pf);
     fmProgUpdate();
 
-    document.getElementById('fmProfileOverlay').classList.add('show');
+    overlay.classList.add('show');
   }
 
   function fmProfileClose() {
@@ -4805,6 +4818,7 @@
   window.fmPhotoPreview         = fmPhotoPreview;
   window.fmGenerateUsername     = fmGenerateUsername;
   window.fmShowPublicProfile    = fmShowPublicProfile;
+  window._fmResetProfilePrompt  = function () { _profilePromptFired = false; };
 }());
 </script>
 </body>
