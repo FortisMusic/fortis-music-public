@@ -4134,6 +4134,32 @@
     else { _fmProfile = null; fmAuthUIUpdate(); }
   });
 
+  // Direct email-confirmation detection — does not rely on onAuthStateChange
+  (function fmHandleConfirmLink() {
+    var h = window.location.hash;
+    if (!h || h.indexOf('access_token') < 0 || h.indexOf('type=signup') < 0) return;
+    var tries = 0;
+    var timer = setInterval(function () {
+      tries++;
+      _sb.auth.getSession().then(function (r) {
+        if (r.data && r.data.session) {
+          clearInterval(timer);
+          _fmUser    = r.data.session.user;
+          _fmProfile = null;
+          fmLoadProfile(function () {
+            fmAuthUIUpdate();
+            // Open overlay directly — bypass all event-name checks
+            if (typeof window.fmProfileOpen === 'function') {
+              window.fmProfileOpen(false);
+            }
+          });
+        } else if (tries >= 20) {
+          clearInterval(timer);
+        }
+      });
+    }, 250);
+  }());
+
   function fmLoadProfile(cb) {
     if (!_fmUser) { if (cb) cb(); return; }
     _sb.from('profiles').select('*').eq('id', _fmUser.id).single()
