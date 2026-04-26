@@ -543,21 +543,45 @@ function togglePlayer(id) {
   if (!isOpen) { player.style.display='block'; if(icon) icon.textContent='⏸'; }
 }
 
+var _pendingVideoId = null;
+
 function addYouTubeVideo() {
   const url = document.getElementById('ytUrlInput').value.trim();
   if (!url) { showToast('Please paste a YouTube URL'); return; }
   const match = url.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
   if (!match) { showToast('Invalid YouTube URL'); return; }
-  const videoId = match[1];
-  const grid = document.getElementById('artist-videos-grid');
-  if (!grid) return;
-  const card = document.createElement('div');
-  card.style.cssText = 'background:#1a1428;border:1px solid rgba(200,180,255,0.13);border-radius:14px;overflow:hidden;';
-  card.innerHTML = '<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" src="https://www.youtube.com/embed/'+videoId+'?rel=0&modestbranding=1" allowfullscreen loading="lazy"></iframe></div><div style="padding:12px 14px;"><div style="font-weight:600;font-size:0.88rem;">New Video</div></div>';
-  grid.insertBefore(card, grid.firstChild);
+  _pendingVideoId = match[1];
+  var overlay = document.getElementById('ytConfirmOverlay');
+  var check   = document.getElementById('ytConfirmCheck');
+  var addBtn  = document.getElementById('ytConfirmAddBtn');
+  if (check)  { check.checked = false; }
+  if (addBtn) { addBtn.disabled = true; addBtn.style.opacity = '0.4'; addBtn.style.cursor = 'not-allowed'; }
+  if (overlay) { overlay.style.display = 'flex'; }
+}
+
+function ytConfirmToggle(checked) {
+  var btn = document.getElementById('ytConfirmAddBtn');
+  if (!btn) return;
+  btn.disabled     = !checked;
+  btn.style.opacity = checked ? '1' : '0.4';
+  btn.style.cursor  = checked ? 'pointer' : 'not-allowed';
+}
+
+function ytConfirmAdd() {
+  if (!_pendingVideoId) return;
+  var videoId = _pendingVideoId;
+  _pendingVideoId = null;
+  ytConfirmCancel();
+  if (typeof window.fmSaveVideoToProfile === 'function') window.fmSaveVideoToProfile(videoId);
   document.getElementById('ytUrlInput').value = '';
   document.getElementById('add-video-form').style.display = 'none';
   showToast('Video added!');
+}
+
+function ytConfirmCancel() {
+  var overlay = document.getElementById('ytConfirmOverlay');
+  if (overlay) { overlay.style.display = 'none'; }
+  _pendingVideoId = null;
 }
 
 // ── FAN PAGE ──
