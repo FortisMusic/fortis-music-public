@@ -5251,9 +5251,9 @@ CREATE POLICY "mark as read"       ON messages FOR UPDATE USING (auth.uid() = re
 <div id="artistChatPanel" style="display:none;position:fixed;bottom:24px;right:24px;z-index:1100;width:320px;background:#1a1230;border:1px solid rgba(200,180,255,0.18);border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.55);">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(200,180,255,0.1);">
     <div id="chatPanelTitle" style="font-size:0.84rem;font-weight:700;color:#fff;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Message Artist</div>
-    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:8px;">
-      <button onclick="fmMinimizeChatPanel()" style="background:none;border:none;color:rgba(200,180,255,0.5);cursor:pointer;font-size:1.1rem;line-height:1;padding:0 2px;" title="Minimize">&#x2014;</button>
-      <button onclick="fmCloseChatPanel()" style="background:none;border:none;color:rgba(200,180,255,0.5);cursor:pointer;font-size:1rem;line-height:1;padding:0;" title="Close">&#x2715;</button>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:8px;position:relative;z-index:1;">
+      <button onclick="fmMinimizeChatPanel()" style="background:none;border:none;color:rgba(200,180,255,0.5);cursor:pointer;font-size:1.1rem;line-height:1;padding:4px 6px;pointer-events:auto;" title="Minimize">&#x2014;</button>
+      <button onclick="fmCloseChatPanel()" style="background:none;border:none;color:rgba(200,180,255,0.5);cursor:pointer;font-size:1rem;line-height:1;padding:4px 6px;pointer-events:auto;" title="Close">&#x2715;</button>
     </div>
   </div>
   <div style="padding:14px 16px;">
