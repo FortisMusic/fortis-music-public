@@ -5133,6 +5133,7 @@
   }
 
   function fmMinimizeChatPanel() {
+    console.log('[FM] fmMinimizeChatPanel called, recipientId:', _fmChatRecipientId);
     var label = document.getElementById('chatTabLabel');
     if (label) label.textContent = _fmChatRecipientName || 'Artist';
     var tab = document.getElementById('chatMinimizedTab');
@@ -5149,6 +5150,7 @@
   }
 
   function fmCloseChatPanel() {
+    console.log('[FM] fmCloseChatPanel called');
     _fmHideBoth();
     _fmStopPoll();
     _fmChatRecipientId = null; _fmChatRecipientName = null;
@@ -5252,8 +5254,8 @@ CREATE POLICY "mark as read"       ON messages FOR UPDATE USING (auth.uid() = re
   <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(200,180,255,0.1);">
     <div id="chatPanelTitle" style="font-size:0.84rem;font-weight:700;color:#fff;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Message Artist</div>
     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:8px;position:relative;z-index:1;">
-      <button onclick="alert('clicked')" style="background:red;border:none;color:#fff;cursor:pointer;font-size:1.1rem;line-height:1;padding:4px 6px;pointer-events:auto;" title="Minimize">&#x2014;</button>
-      <button onclick="alert('clicked')" style="background:red;border:none;color:#fff;cursor:pointer;font-size:1rem;line-height:1;padding:4px 6px;pointer-events:auto;" title="Close">&#x2715;</button>
+      <button onclick="fmMinimizeChatPanel()" style="background:none;border:none;color:rgba(200,180,255,0.5);cursor:pointer;font-size:1.1rem;line-height:1;padding:4px 6px;pointer-events:auto;" title="Minimize">&#x2014;</button>
+      <button onclick="fmCloseChatPanel()" style="background:none;border:none;color:rgba(200,180,255,0.5);cursor:pointer;font-size:1rem;line-height:1;padding:4px 6px;pointer-events:auto;" title="Close">&#x2715;</button>
     </div>
   </div>
   <div style="padding:14px 16px;">
