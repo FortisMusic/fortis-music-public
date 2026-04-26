@@ -61,6 +61,7 @@
       <button class="fm-avatar-btn" id="navAvatarBtn" onclick="fmAvatarToggle()" aria-label="My account">
         <span id="navAvatarInitials">?</span>
       </button>
+      <span id="navMsgBadge" style="display:none;position:absolute;top:-3px;right:-3px;background:#E91E8C;color:#fff;font-size:0.55rem;font-weight:800;min-width:15px;height:15px;border-radius:50%;align-items:center;justify-content:center;pointer-events:none;border:2px solid #0d0818;padding:0 2px;box-sizing:border-box;"></span>
       <div class="fm-avatar-dropdown" id="fmAvatarDropdown">
         <button class="fm-avatar-dd-item" onclick="fmGoProfile()">My Profile</button>
         <button class="fm-avatar-dd-item" onclick="fmGoSettings()">Settings</button>
@@ -3136,6 +3137,7 @@
           <div><span id="artistStatFollowers" style="font-weight:600;color:#fff;font-size:0.92rem;">0</span> <span style="color:rgba(200,180,255,0.55);font-size:0.78rem;">followers</span></div>
           <div><span id="artistStatFans" style="font-weight:600;color:#00E676;font-size:0.92rem;">0</span> <span style="color:rgba(200,180,255,0.55);font-size:0.78rem;">active fans</span></div>
         </div>
+        <div id="artistSocialRow" style="display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap;"></div>
       </div>
       <div style="display:flex;flex-direction:column;gap:8px;">
         <button onclick="showPage('upload')" style="padding:10px 20px;background:#f0f0f5;border:none;color:#0d0818;border-radius:16px;font-size:0.82rem;font-weight:700;cursor:pointer;letter-spacing:0.02em;">Protect New Track</button>
@@ -3259,13 +3261,6 @@
         <div id="artist-videos-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;"></div>
       </div>
 
-    <!-- Contact Section -->
-    <div id="artistContactSection" style="background:rgba(255,255,255,0.025);border:1px solid rgba(123,47,255,0.28);border-radius:16px;padding:22px;margin-top:16px;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">
-      <div style="font-size:0.66rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(200,180,255,0.52);margin-bottom:14px;">Contact</div>
-      <div id="artistContactInner" style="display:flex;flex-direction:column;gap:10px;">
-        <div style="color:rgba(200,180,255,0.35);font-size:0.8rem;">No contact info added yet. Edit your profile to add email, phone, or social links.</div>
-      </div>
-    </div>
 
     <!-- Inline Edit Panel -->
     <div id="artistEditPanel" style="display:none;background:rgba(255,255,255,0.025);border:1px solid rgba(200,169,126,0.25);border-radius:16px;padding:22px;margin-top:16px;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">
@@ -4122,6 +4117,7 @@
       var _artistPage = document.getElementById('page-artist');
       if (_artistPage && _artistPage.classList.contains('active')) fmPopulateArtistPage(_fmProfile);
     }
+    if (_fmUser && typeof window.fmLoadUnreadCount === 'function') window.fmLoadUnreadCount();
   }
 
   // Modal control
@@ -4911,24 +4907,26 @@
       metaEl.textContent = [genre, loc, since].filter(Boolean).join(' · ');
     }
 
-    // Contact section
-    var contactInner = document.getElementById('artistContactInner');
-    if (contactInner) {
-      var c = '';
+    // Social links + message button in header
+    var socialRow = document.getElementById('artistSocialRow');
+    if (socialRow) {
+      var SOCIALS = [
+        { key: 'instagram',  label: 'IG', color: '#E1306C', bg: 'rgba(225,48,108,0.12)', bd: 'rgba(225,48,108,0.35)' },
+        { key: 'youtube',    label: 'YT', color: '#FF4444', bg: 'rgba(255,68,68,0.1)',   bd: 'rgba(255,68,68,0.3)'   },
+        { key: 'spotify',    label: 'SP', color: '#1DB954', bg: 'rgba(29,185,84,0.1)',   bd: 'rgba(29,185,84,0.3)'   },
+        { key: 'soundcloud', label: 'SC', color: '#FF5500', bg: 'rgba(255,85,0,0.1)',    bd: 'rgba(255,85,0,0.3)'    },
+        { key: 'mixcloud',   label: 'MC', color: '#8B3DFF', bg: 'rgba(139,61,255,0.1)',  bd: 'rgba(139,61,255,0.3)'  },
+        { key: 'facebook',   label: 'FB', color: '#1877F2', bg: 'rgba(24,119,242,0.1)',  bd: 'rgba(24,119,242,0.3)'  }
+      ];
+      var _bs = 'display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;font-size:0.62rem;font-weight:800;text-decoration:none;letter-spacing:0.02em;';
+      var h = '';
+      SOCIALS.forEach(function(s) {
+        if (meta[s.key]) h += '<a href="' + meta[s.key] + '" target="_blank" rel="noopener" style="' + _bs + 'background:' + s.bg + ';border:1px solid ' + s.bd + ';color:' + s.color + ';">' + s.label + '</a>';
+      });
       if (pf.fortis_contact !== false) {
-        c += '<button onclick="alert(\'Fortis contact form — coming soon.\')" style="padding:10px 20px;background:rgba(123,47,255,0.15);border:1px solid rgba(123,47,255,0.35);color:#A06EFF;border-radius:16px;font-size:0.82rem;cursor:pointer;font-family:inherit;text-align:left;">&#x1F4AC; Send Message via Fortis</button>';
+        h += '<button data-rid="' + pf.id + '" data-rname="' + name.replace(/"/g, '&quot;') + '" onclick="fmOpenChatPanel(this.dataset.rid,this.dataset.rname)" style="' + _bs + 'background:rgba(123,47,255,0.12);border:1px solid rgba(123,47,255,0.35);color:#A06EFF;cursor:pointer;font-size:0.88rem;padding:0;font-family:inherit;" title="Send Message">&#x1F4AC;</button>';
       }
-      if (meta.public_email) c += '<a href="mailto:' + meta.public_email + '" style="display:block;color:rgba(200,180,255,0.7);font-size:0.82rem;text-decoration:none;">&#x2709; ' + meta.public_email + '</a>';
-      if (meta.phone)        c += '<a href="tel:' + meta.phone + '" style="display:block;color:rgba(200,180,255,0.7);font-size:0.82rem;text-decoration:none;">&#128222; ' + meta.phone + '</a>';
-      if (meta.website)      c += '<a href="' + meta.website + '" target="_blank" rel="noopener" style="display:block;color:rgba(200,180,255,0.7);font-size:0.82rem;text-decoration:none;">&#127760; ' + meta.website + '</a>';
-      var socs = [['instagram','IG',meta.instagram],['youtube','YT',meta.youtube],['spotify','SP',meta.spotify],['soundcloud','SC',meta.soundcloud],['mixcloud','MC',meta.mixcloud],['facebook','FB',meta.facebook]].filter(function(s){return s[2];});
-      if (socs.length) {
-        c += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">';
-        socs.forEach(function(s){ c += '<a href="' + s[2] + '" target="_blank" rel="noopener" style="padding:5px 12px;border:1px solid rgba(200,180,255,0.18);border-radius:10px;color:rgba(200,180,255,0.7);font-size:0.72rem;font-weight:600;text-decoration:none;">' + s[1] + '</a>'; });
-        c += '</div>';
-      }
-      if (!c) c = '<div style="color:rgba(200,180,255,0.35);font-size:0.8rem;">No contact info added yet. Edit your profile to add email, phone, or social links.</div>';
-      contactInner.innerHTML = c;
+      socialRow.innerHTML = h;
     }
 
     // Videos
@@ -5054,6 +5052,70 @@
     });
   }
 
+  // ── Messaging ─────────────────────────────────────────────────────────────
+  var _fmChatRecipientId   = null;
+  var _fmChatRecipientName = null;
+
+  function fmOpenChatPanel(recipientId, recipientName) {
+    _fmChatRecipientId   = recipientId   || null;
+    _fmChatRecipientName = recipientName || 'Artist';
+    var title = document.getElementById('chatPanelTitle');
+    if (title) title.textContent = 'Message ' + _fmChatRecipientName;
+    var input = document.getElementById('chatMsgInput');
+    if (input) input.value = '';
+    var errEl = document.getElementById('chatMsgError');
+    if (errEl) errEl.style.display = 'none';
+    var panel = document.getElementById('artistChatPanel');
+    if (panel) panel.style.display = 'block';
+  }
+
+  function fmCloseChatPanel() {
+    var panel = document.getElementById('artistChatPanel');
+    if (panel) panel.style.display = 'none';
+    _fmChatRecipientId = null; _fmChatRecipientName = null;
+  }
+
+  function fmSendMessage() {
+    var sb    = window._sb;
+    var user  = window._fmUser;
+    var errEl = document.getElementById('chatMsgError');
+    var btn   = document.getElementById('chatSendBtn');
+    var input = document.getElementById('chatMsgInput');
+    if (errEl) errEl.style.display = 'none';
+    if (!user) { if (typeof window.fmAuthShow === 'function') window.fmAuthShow('login'); return; }
+    if (!_fmChatRecipientId) return;
+    if (user.id === _fmChatRecipientId) { if (typeof showToast === 'function') showToast('You cannot message yourself'); return; }
+    var msg = input && input.value.trim();
+    if (!msg) { if (errEl) { errEl.textContent = 'Please write a message.'; errEl.style.display = 'block'; } return; }
+    btn.disabled = true; btn.textContent = 'Sending…';
+    sb.from('messages').insert({ sender_id: user.id, recipient_id: _fmChatRecipientId, message: msg, is_read: false })
+      .then(function(r) {
+        btn.disabled = false; btn.textContent = 'Send';
+        if (r && r.error) { if (errEl) { errEl.textContent = r.error.message; errEl.style.display = 'block'; } return; }
+        if (input) input.value = '';
+        fmCloseChatPanel();
+        if (typeof showToast === 'function') showToast('Message sent!');
+      }).catch(function(ex) {
+        btn.disabled = false; btn.textContent = 'Send';
+        if (errEl) { errEl.textContent = (ex && ex.message) || 'Send failed.'; errEl.style.display = 'block'; }
+      });
+  }
+
+  function fmLoadUnreadCount() {
+    var sb   = window._sb;
+    var user = window._fmUser;
+    if (!sb || !user) return;
+    sb.from('messages').select('id', { count: 'exact', head: true })
+      .eq('recipient_id', user.id).eq('is_read', false)
+      .then(function(r) {
+        var badge = document.getElementById('navMsgBadge');
+        if (!badge) return;
+        var n = (r && r.count) ? r.count : 0;
+        if (n > 0) { badge.textContent = n > 99 ? '99+' : String(n); badge.style.display = 'flex'; }
+        else        { badge.style.display = 'none'; }
+      });
+  }
+
   // ── Override fmGoProfile from auth module ─────────────────────────────────
   window.fmGoProfile = function () {
     if (typeof window.fmAvatarClose === 'function') window.fmAvatarClose();
@@ -5083,9 +5145,39 @@
   window.fmArtistEditSave       = fmArtistEditSave;
   window.fmSaveVideoToProfile   = fmSaveVideoToProfile;
   window.fmRemoveVideo          = fmRemoveVideo;
+  window.fmOpenChatPanel        = fmOpenChatPanel;
+  window.fmCloseChatPanel       = fmCloseChatPanel;
+  window.fmSendMessage          = fmSendMessage;
+  window.fmLoadUnreadCount      = fmLoadUnreadCount;
   window._fmResetProfilePrompt  = function () { _profilePromptFired = false; };
 }());
 </script>
+<!-- MESSAGES CHAT PANEL -->
+<!-- SQL MIGRATION — run once in Supabase SQL Editor:
+CREATE TABLE IF NOT EXISTS messages (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  sender_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,
+  recipient_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,
+  message text NOT NULL,
+  created_at timestamptz DEFAULT now(),
+  is_read boolean DEFAULT false
+);
+ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "send own messages" ON messages FOR INSERT WITH CHECK (auth.uid() = sender_id);
+CREATE POLICY "read own messages"  ON messages FOR SELECT USING (auth.uid() = sender_id OR auth.uid() = recipient_id);
+CREATE POLICY "mark as read"       ON messages FOR UPDATE USING (auth.uid() = recipient_id);
+-->
+<div id="artistChatPanel" style="display:none;position:fixed;bottom:24px;right:24px;z-index:1100;width:320px;background:#1a1230;border:1px solid rgba(200,180,255,0.18);border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.55);">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(200,180,255,0.1);">
+    <div id="chatPanelTitle" style="font-size:0.84rem;font-weight:700;color:#fff;">Message Artist</div>
+    <button onclick="fmCloseChatPanel()" style="background:none;border:none;color:rgba(200,180,255,0.5);cursor:pointer;font-size:1rem;line-height:1;padding:0;">&#x2715;</button>
+  </div>
+  <div style="padding:14px 16px;">
+    <textarea id="chatMsgInput" rows="4" placeholder="Write a message..." style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:8px;padding:10px 12px;font-size:0.84rem;font-family:inherit;resize:none;outline:none;"></textarea>
+    <div id="chatMsgError" style="display:none;color:#FF6B6B;font-size:0.75rem;margin-top:6px;"></div>
+    <button id="chatSendBtn" onclick="fmSendMessage()" style="width:100%;margin-top:10px;padding:10px 0;background:#7B2FFF;border:none;color:#fff;border-radius:12px;font-size:0.84rem;font-weight:700;cursor:pointer;font-family:inherit;">Send</button>
+  </div>
+</div>
 <div id="toast" class="toast"><span id="toastMsg"></span></div>
 </body>
 </html>
