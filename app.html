@@ -4728,13 +4728,22 @@
         err.textContent = r.error.message + ' (Run SQL migration in Supabase dashboard)';
         err.style.display = 'block'; return;
       }
-      // Reload profile from Supabase
+      // Reload fresh profile then navigate to public page
       sb.from('profiles').select('*').eq('id', user.id).single().then(function (r2) {
-        if (r2.data) { window._fmProfile = r2.data; if (typeof fmAuthUIUpdate === 'function') fmAuthUIUpdate(); }
+        if (r2.data) {
+          window._fmProfile = r2.data;
+          if (typeof fmAuthUIUpdate === 'function') fmAuthUIUpdate();
+        }
+        fmProfileClose();
+        if (user) localStorage.setItem('fm_pf_done_' + user.id, '1');
+        if (typeof showToast === 'function') showToast('Profile saved! Opening your profile…');
+        // Navigate to the user's public profile page
+        setTimeout(function () { fmShowPublicProfile(user.id); }, 250);
+      }).catch(function () {
+        fmProfileClose();
+        if (user) localStorage.setItem('fm_pf_done_' + user.id, '1');
+        if (typeof showToast === 'function') showToast('Profile saved!');
       });
-      fmProfileClose();
-      if (user) localStorage.setItem('fm_pf_done_' + user.id, '1');
-      if (typeof showToast === 'function') showToast('Profile saved!');
     }).catch(function (ex) {
       btn.disabled = false; btn.textContent = 'Save Profile →';
       err.textContent = (ex && ex.message) || 'Save failed. Check Supabase migration.';
@@ -4762,8 +4771,8 @@
     if (inner) inner.innerHTML = '<div style="color:var(--muted);padding:60px 0;text-align:center;">Loading…</div>';
     if (typeof showPage === 'function') showPage('pub-profile');
     sb.from('profiles').select('*').eq('id', userId).single().then(function (r) {
-      if (!r.data || !r.data.is_public) {
-        if (inner) inner.innerHTML = '<div style="color:var(--muted);padding:60px 0;text-align:center;">Profile not found or not public yet.</div>';
+      if (!r.data) {
+        if (inner) inner.innerHTML = '<div style="color:var(--muted);padding:60px 0;text-align:center;">Profile not found.</div>';
       } else { pfRenderPublic(r.data); }
     });
   }
@@ -4827,8 +4836,11 @@
       socPairs.forEach(function(s){h+='<a class="fm-pub-social-btn" href="'+s[2]+'" target="_blank" rel="noopener">'+s[1]+'</a>';});
       h += '</div>';
     }
-    h += '<div class="fm-pub-url">fortismusic.co/' + slug + '/' + (p.username || p.id.substring(0,8)) + '</div>';
+    var pubPath = slug + '/' + (p.username || p.id.substring(0,8));
+    h += '<div class="fm-pub-url">fortismusic.co/' + pubPath + '</div>';
     inner.innerHTML = h;
+    // Update URL hash so this profile is directly linkable — replaceState avoids triggering hashchange
+    history.replaceState(null, '', window.location.pathname + '#' + pubPath);
   }
 
   // ── Hash routing ──────────────────────────────────────────────────────────
@@ -4838,7 +4850,7 @@
     if (parts.length < 2 || !parts[1]) return;
     var username = parts[1];
     var sb = window._sb; if (!sb) return;
-    sb.from('profiles').select('*').eq('username', username).eq('is_public', true).single()
+    sb.from('profiles').select('*').eq('username', username).single()
       .then(function (r) {
         if (r.data) pfRenderPublic(r.data);
         else if (typeof showToast === 'function') showToast('Profile not found.');
