@@ -161,6 +161,7 @@ function showPage(id) {
   });
   window.scrollTo(0, 0);
   if (id === 'discover') loadDiscoverProfiles(filterArtists);
+  if (id === 'artist') { if (typeof window.fmPopulateArtistPage === 'function') window.fmPopulateArtistPage(window._fmProfile); }
   if (id === 'gear') setTimeout(function(){ renderGearCards(); }, 50);
   if (id === 'studio') setTimeout(renderStudioCards, 50);
   if (id === 'dance') setTimeout(renderDanceCards, 50);
