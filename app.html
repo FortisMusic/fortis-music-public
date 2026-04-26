@@ -5055,6 +5055,68 @@
   // ── Messaging ─────────────────────────────────────────────────────────────
   var _fmChatRecipientId   = null;
   var _fmChatRecipientName = null;
+  var _fmChatPollInterval  = null;
+
+  function _fmShowPanel() {
+    var p = document.getElementById('artistChatPanel');
+    var t = document.getElementById('chatMinimizedTab');
+    if (p) p.style.display = 'block';
+    if (t) t.style.display = 'none';
+  }
+
+  function _fmShowTab() {
+    var p = document.getElementById('artistChatPanel');
+    var t = document.getElementById('chatMinimizedTab');
+    if (p) p.style.display = 'none';
+    if (t) t.style.display = 'block';
+  }
+
+  function _fmHideBoth() {
+    var p = document.getElementById('artistChatPanel');
+    var t = document.getElementById('chatMinimizedTab');
+    if (p) p.style.display = 'none';
+    if (t) t.style.display = 'none';
+  }
+
+  function _fmTabSetUnread(n) {
+    var tab   = document.getElementById('chatMinimizedTab');
+    var label = document.getElementById('chatTabLabel');
+    if (!label) return;
+    var base = _fmChatRecipientName || 'Artist';
+    if (n > 0) {
+      label.textContent    = base + ' (' + n + ')';
+      if (tab) { tab.style.borderColor = 'rgba(233,30,140,0.55)'; tab.style.background = 'rgba(233,30,140,0.08)'; }
+    } else {
+      label.textContent    = base;
+      if (tab) { tab.style.borderColor = 'rgba(200,180,255,0.18)'; tab.style.background = '#1a1230'; }
+    }
+  }
+
+  function _fmStartPoll() {
+    _fmStopPoll();
+    _fmChatPollInterval = setInterval(function() {
+      var sb = window._sb; var user = window._fmUser;
+      if (!sb || !user || !_fmChatRecipientId) return;
+      sb.from('messages').select('id', { count: 'exact', head: true })
+        .eq('recipient_id', user.id).eq('sender_id', _fmChatRecipientId).eq('is_read', false)
+        .then(function(r) {
+          _fmTabSetUnread((r && r.count) ? r.count : 0);
+          fmLoadUnreadCount();
+        });
+    }, 5000);
+  }
+
+  function _fmStopPoll() {
+    if (_fmChatPollInterval) { clearInterval(_fmChatPollInterval); _fmChatPollInterval = null; }
+  }
+
+  function _fmMarkChatRead() {
+    var sb = window._sb; var user = window._fmUser;
+    if (!sb || !user || !_fmChatRecipientId) return;
+    sb.from('messages').update({ is_read: true })
+      .eq('recipient_id', user.id).eq('sender_id', _fmChatRecipientId).eq('is_read', false)
+      .then(function() { fmLoadUnreadCount(); });
+  }
 
   function fmOpenChatPanel(recipientId, recipientName) {
     _fmChatRecipientId   = recipientId   || null;
@@ -5065,13 +5127,30 @@
     if (input) input.value = '';
     var errEl = document.getElementById('chatMsgError');
     if (errEl) errEl.style.display = 'none';
-    var panel = document.getElementById('artistChatPanel');
-    if (panel) panel.style.display = 'block';
+    _fmShowPanel();
+    _fmStopPoll();
+    _fmMarkChatRead();
+  }
+
+  function fmMinimizeChatPanel() {
+    var label = document.getElementById('chatTabLabel');
+    if (label) label.textContent = _fmChatRecipientName || 'Artist';
+    var tab = document.getElementById('chatMinimizedTab');
+    if (tab) { tab.style.borderColor = 'rgba(200,180,255,0.18)'; tab.style.background = '#1a1230'; }
+    _fmShowTab();
+    _fmStartPoll();
+  }
+
+  function fmExpandChatFromTab() {
+    _fmShowPanel();
+    _fmStopPoll();
+    _fmTabSetUnread(0);
+    _fmMarkChatRead();
   }
 
   function fmCloseChatPanel() {
-    var panel = document.getElementById('artistChatPanel');
-    if (panel) panel.style.display = 'none';
+    _fmHideBoth();
+    _fmStopPoll();
     _fmChatRecipientId = null; _fmChatRecipientName = null;
   }
 
@@ -5146,6 +5225,8 @@
   window.fmSaveVideoToProfile   = fmSaveVideoToProfile;
   window.fmRemoveVideo          = fmRemoveVideo;
   window.fmOpenChatPanel        = fmOpenChatPanel;
+  window.fmMinimizeChatPanel    = fmMinimizeChatPanel;
+  window.fmExpandChatFromTab    = fmExpandChatFromTab;
   window.fmCloseChatPanel       = fmCloseChatPanel;
   window.fmSendMessage          = fmSendMessage;
   window.fmLoadUnreadCount      = fmLoadUnreadCount;
@@ -5169,13 +5250,22 @@ CREATE POLICY "mark as read"       ON messages FOR UPDATE USING (auth.uid() = re
 -->
 <div id="artistChatPanel" style="display:none;position:fixed;bottom:24px;right:24px;z-index:1100;width:320px;background:#1a1230;border:1px solid rgba(200,180,255,0.18);border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.55);">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(200,180,255,0.1);">
-    <div id="chatPanelTitle" style="font-size:0.84rem;font-weight:700;color:#fff;">Message Artist</div>
-    <button onclick="fmCloseChatPanel()" style="background:none;border:none;color:rgba(200,180,255,0.5);cursor:pointer;font-size:1rem;line-height:1;padding:0;">&#x2715;</button>
+    <div id="chatPanelTitle" style="font-size:0.84rem;font-weight:700;color:#fff;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Message Artist</div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:8px;">
+      <button onclick="fmMinimizeChatPanel()" style="background:none;border:none;color:rgba(200,180,255,0.5);cursor:pointer;font-size:1.1rem;line-height:1;padding:0 2px;" title="Minimize">&#x2014;</button>
+      <button onclick="fmCloseChatPanel()" style="background:none;border:none;color:rgba(200,180,255,0.5);cursor:pointer;font-size:1rem;line-height:1;padding:0;" title="Close">&#x2715;</button>
+    </div>
   </div>
   <div style="padding:14px 16px;">
     <textarea id="chatMsgInput" rows="4" placeholder="Write a message..." style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:8px;padding:10px 12px;font-size:0.84rem;font-family:inherit;resize:none;outline:none;"></textarea>
     <div id="chatMsgError" style="display:none;color:#FF6B6B;font-size:0.75rem;margin-top:6px;"></div>
     <button id="chatSendBtn" onclick="fmSendMessage()" style="width:100%;margin-top:10px;padding:10px 0;background:#7B2FFF;border:none;color:#fff;border-radius:12px;font-size:0.84rem;font-weight:700;cursor:pointer;font-family:inherit;">Send</button>
+  </div>
+</div>
+<div id="chatMinimizedTab" style="display:none;position:fixed;bottom:24px;right:24px;z-index:1100;background:#1a1230;border:1px solid rgba(200,180,255,0.18);border-radius:10px;padding:10px 16px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.45);max-width:220px;" onclick="fmExpandChatFromTab()">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span style="font-size:0.72rem;color:rgba(200,180,255,0.5);flex-shrink:0;">&#x1F4AC;</span>
+    <span id="chatTabLabel" style="font-size:0.82rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;"></span>
   </div>
 </div>
 <div id="toast" class="toast"><span id="toastMsg"></span></div>
