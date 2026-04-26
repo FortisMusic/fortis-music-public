@@ -4118,6 +4118,10 @@
       if (joinBtn)    joinBtn.style.display = '';
       if (avatarWrap) avatarWrap.style.display = 'none';
     }
+    if (_fmProfile && typeof fmPopulateArtistPage === 'function') {
+      var _artistPage = document.getElementById('page-artist');
+      if (_artistPage && _artistPage.classList.contains('active')) fmPopulateArtistPage(_fmProfile);
+    }
   }
 
   // Modal control
@@ -5082,5 +5086,6 @@
   window._fmResetProfilePrompt  = function () { _profilePromptFired = false; };
 }());
 </script>
+<div id="toast" class="toast"><span id="toastMsg"></span></div>
 </body>
 </html>
