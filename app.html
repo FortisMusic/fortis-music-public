@@ -3131,15 +3131,15 @@
         </div>
         <div id="artistPageMeta" style="color:rgba(200,180,255,0.55);font-size:0.8rem;font-weight:300;">Electronic · Dubai, UAE · Member since Dec 2025</div>
         <div style="display:flex;gap:20px;margin-top:10px;flex-wrap:wrap;">
-          <div><span style="font-weight:600;color:#fff;font-size:0.92rem;">4</span> <span style="color:rgba(200,180,255,0.55);font-size:0.78rem;">protected tracks</span></div>
-          <div><span style="font-weight:600;color:#C8A97E;font-size:0.92rem;">€820</span> <span style="color:rgba(200,180,255,0.55);font-size:0.78rem;">total earned</span></div>
-          <div><span style="font-weight:600;color:#fff;font-size:0.92rem;">12.3K</span> <span style="color:rgba(200,180,255,0.55);font-size:0.78rem;">followers</span></div>
-          <div><span style="font-weight:600;color:#00E676;font-size:0.92rem;">48</span> <span style="color:rgba(200,180,255,0.55);font-size:0.78rem;">active fans</span></div>
+          <div><span id="artistStatProtected" style="font-weight:600;color:#fff;font-size:0.92rem;">0</span> <span style="color:rgba(200,180,255,0.55);font-size:0.78rem;">protected tracks</span></div>
+          <div><span id="artistStatEarned" style="font-weight:600;color:#C8A97E;font-size:0.92rem;">€0</span> <span style="color:rgba(200,180,255,0.55);font-size:0.78rem;">total earned</span></div>
+          <div><span id="artistStatFollowers" style="font-weight:600;color:#fff;font-size:0.92rem;">0</span> <span style="color:rgba(200,180,255,0.55);font-size:0.78rem;">followers</span></div>
+          <div><span id="artistStatFans" style="font-weight:600;color:#00E676;font-size:0.92rem;">0</span> <span style="color:rgba(200,180,255,0.55);font-size:0.78rem;">active fans</span></div>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:8px;">
         <button onclick="showPage('upload')" style="padding:10px 20px;background:#f0f0f5;border:none;color:#0d0818;border-radius:16px;font-size:0.82rem;font-weight:700;cursor:pointer;letter-spacing:0.02em;">Protect New Track</button>
-        <button onclick="if(typeof window.fmProfileOpen==='function')window.fmProfileOpen(true)" style="padding:10px 20px;background:transparent;border:1px solid rgba(200,169,126,0.35);color:#C8A97E;border-radius:16px;font-size:0.82rem;cursor:pointer;">Edit Profile</button>
+        <button onclick="fmArtistEditOpen()" style="padding:10px 20px;background:transparent;border:1px solid rgba(200,169,126,0.35);color:#C8A97E;border-radius:16px;font-size:0.82rem;cursor:pointer;">Edit Profile</button>
         <button onclick="showPage('fan')" style="padding:10px 20px;background:transparent;border:1px solid rgba(123,47,255,0.28);color:rgba(200,180,255,0.62);border-radius:16px;font-size:0.82rem;cursor:pointer;;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">Fan View</button>
       </div>
     </div>
@@ -3156,19 +3156,19 @@
     <!-- Stats Grid -->
     <div class="stats-grid-4col" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(200,180,255,0.11);border:1px solid rgba(200,180,255,0.11);border-radius:16px;overflow:hidden;margin-bottom:28px;">
       <div style="background:#0d0818;padding:20px;text-align:center;">
-        <div style="font-size:1.6rem;font-weight:800;font-family:'Inter',sans-serif;color:#00E676;letter-spacing:-0.02em;">4</div>
+        <div id="artistGridProtected" style="font-size:1.6rem;font-weight:800;font-family:'Inter',sans-serif;color:#00E676;letter-spacing:-0.02em;">0</div>
         <div style="font-size:0.66rem;color:rgba(200,180,255,0.52);margin-top:5px;letter-spacing:0.1em;text-transform:uppercase;">Protected</div>
       </div>
       <div style="background:#0d0818;padding:20px;text-align:center;">
-        <div style="font-size:1.6rem;font-weight:800;font-family:'Inter',sans-serif;color:#C8A97E;letter-spacing:-0.02em;">€820</div>
+        <div style="font-size:1.6rem;font-weight:800;font-family:'Inter',sans-serif;color:#C8A97E;letter-spacing:-0.02em;">€0</div>
         <div style="font-size:0.66rem;color:rgba(200,180,255,0.52);margin-top:5px;letter-spacing:0.1em;text-transform:uppercase;">Earned</div>
       </div>
       <div style="background:#0d0818;padding:20px;text-align:center;">
-        <div style="font-size:1.6rem;font-weight:800;font-family:'Inter',sans-serif;color:#fff;letter-spacing:-0.02em;">€340</div>
+        <div style="font-size:1.6rem;font-weight:800;font-family:'Inter',sans-serif;color:#fff;letter-spacing:-0.02em;">€0</div>
         <div style="font-size:0.66rem;color:rgba(200,180,255,0.52);margin-top:5px;letter-spacing:0.1em;text-transform:uppercase;">Donations</div>
       </div>
       <div style="background:#0d0818;padding:20px;text-align:center;">
-        <div style="font-size:1.6rem;font-weight:800;font-family:'Inter',sans-serif;color:#fff;letter-spacing:-0.02em;">€180</div>
+        <div style="font-size:1.6rem;font-weight:800;font-family:'Inter',sans-serif;color:#fff;letter-spacing:-0.02em;">€0</div>
         <div style="font-size:0.66rem;color:rgba(200,180,255,0.52);margin-top:5px;letter-spacing:0.1em;text-transform:uppercase;">Merch</div>
       </div>
     </div>
@@ -3182,35 +3182,8 @@
           <div style="font-size:0.66rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(200,180,255,0.52);">My Music</div>
           <button onclick="showPage('upload')" style="padding:4px 12px;background:transparent;border:1px solid rgba(123,47,255,0.28);color:rgba(200,180,255,0.62);border-radius:16px;font-size:0.72rem;cursor:pointer;letter-spacing:0.04em;;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">+ Add</button>
         </div>
-        <div style="display:flex;flex-direction:column;gap:0;">
-          <div class="artist-track-row" style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(200,180,255,0.07);cursor:pointer;">
-            <div style="width:32px;height:32px;background:rgba(155,111,255,0.1);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9B6FFF" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            </div>
-            <div style="flex:1;"><div style="font-size:0.84rem;font-weight:500;">Midnight Echo</div><div style="font-size:0.7rem;color:rgba(200,180,255,0.52);">2:34 · Protected Mar 1</div></div>
-            <div style="text-align:right;"><div style="font-size:0.7rem;color:#00E676;letter-spacing:0.06em;text-transform:uppercase;">Protected</div><div style="font-size:0.68rem;color:rgba(200,180,255,0.52);">142 plays</div></div>
-          </div>
-          <div class="artist-track-row" style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(200,180,255,0.07);cursor:pointer;">
-            <div style="width:32px;height:32px;background:rgba(0,230,118,0.06);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#00E676" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            </div>
-            <div style="flex:1;"><div style="font-size:0.84rem;font-weight:500;">Deep Current</div><div style="font-size:0.7rem;color:rgba(200,180,255,0.52);">3:12 · Protected Feb 20</div></div>
-            <div style="text-align:right;"><div style="font-size:0.7rem;color:#00E676;letter-spacing:0.06em;text-transform:uppercase;">Protected</div><div style="font-size:0.68rem;color:rgba(200,180,255,0.52);">89 plays</div></div>
-          </div>
-          <div class="artist-track-row" style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(200,180,255,0.07);cursor:pointer;">
-            <div style="width:32px;height:32px;background:rgba(200,169,126,0.08);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#C8A97E" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            </div>
-            <div style="flex:1;"><div style="font-size:0.84rem;font-weight:500;">Aurora Light</div><div style="font-size:0.7rem;color:rgba(200,180,255,0.52);">4:05 · Protected Feb 10</div></div>
-            <div style="text-align:right;"><div style="font-size:0.7rem;color:#00E676;letter-spacing:0.06em;text-transform:uppercase;">Protected</div><div style="font-size:0.68rem;color:rgba(200,180,255,0.52);">67 plays</div></div>
-          </div>
-          <div class="artist-track-row" style="display:flex;align-items:center;gap:12px;padding:10px 0;cursor:pointer;">
-            <div style="width:32px;height:32px;background:rgba(200,180,255,0.07);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            </div>
-            <div style="flex:1;"><div style="font-size:0.84rem;font-weight:500;">Lost in Dubai</div><div style="font-size:0.7rem;color:rgba(200,180,255,0.52);">3:47 · Protected Mar 1</div></div>
-            <div style="text-align:right;"><div style="font-size:0.7rem;color:#00E676;letter-spacing:0.06em;text-transform:uppercase;">Protected</div><div style="font-size:0.68rem;color:rgba(200,180,255,0.52);">54 plays</div></div>
-          </div>
+        <div id="artistTrackList" style="display:flex;flex-direction:column;gap:0;">
+          <div style="padding:20px 0;text-align:center;color:rgba(200,180,255,0.4);font-size:0.8rem;">No tracks protected yet. Click + Add to protect your first track.</div>
         </div>
       </div>
 
@@ -3220,58 +3193,39 @@
         <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
           <div style="display:flex;align-items:center;gap:10px;">
             <div style="font-size:0.78rem;color:rgba(200,180,255,0.62);width:100px;">Music Sales</div>
-            <div style="flex:1;height:2px;background:rgba(200,180,255,0.11);border-radius:1px;"><div style="height:100%;width:73%;background:#C8A97E;border-radius:1px;"></div></div>
-            <div style="font-size:0.8rem;font-weight:500;color:#C8A97E;width:40px;text-align:right;">€300</div>
+            <div style="flex:1;height:2px;background:rgba(200,180,255,0.11);border-radius:1px;"><div style="height:100%;width:0%;background:#C8A97E;border-radius:1px;"></div></div>
+            <div style="font-size:0.8rem;font-weight:500;color:#C8A97E;width:40px;text-align:right;">€0</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <div style="font-size:0.78rem;color:rgba(200,180,255,0.62);width:100px;">Fan Donations</div>
-            <div style="flex:1;height:2px;background:rgba(200,180,255,0.11);border-radius:1px;"><div style="height:100%;width:55%;background:#9B6FFF;border-radius:1px;"></div></div>
-            <div style="font-size:0.8rem;font-weight:500;color:#9B6FFF;width:40px;text-align:right;">€340</div>
+            <div style="flex:1;height:2px;background:rgba(200,180,255,0.11);border-radius:1px;"><div style="height:100%;width:0%;background:#9B6FFF;border-radius:1px;"></div></div>
+            <div style="font-size:0.8rem;font-weight:500;color:#9B6FFF;width:40px;text-align:right;">€0</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <div style="font-size:0.78rem;color:rgba(200,180,255,0.62);width:100px;">Merch</div>
-            <div style="flex:1;height:2px;background:rgba(200,180,255,0.11);border-radius:1px;"><div style="height:100%;width:29%;background:rgba(255,255,255,0.3);border-radius:1px;"></div></div>
-            <div style="font-size:0.8rem;font-weight:500;color:rgba(200,180,255,0.72);width:40px;text-align:right;">€180</div>
+            <div style="flex:1;height:2px;background:rgba(200,180,255,0.11);border-radius:1px;"><div style="height:100%;width:0%;background:rgba(255,255,255,0.3);border-radius:1px;"></div></div>
+            <div style="font-size:0.8rem;font-weight:500;color:rgba(200,180,255,0.72);width:40px;text-align:right;">€0</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <div style="font-size:0.78rem;color:rgba(200,180,255,0.62);width:100px;">Unlocks</div>
-            <div style="flex:1;height:2px;background:rgba(200,180,255,0.11);border-radius:1px;"><div style="height:100%;width:16%;background:#00E676;border-radius:1px;"></div></div>
-            <div style="font-size:0.8rem;font-weight:500;color:#00E676;width:40px;text-align:right;">€100</div>
+            <div style="flex:1;height:2px;background:rgba(200,180,255,0.11);border-radius:1px;"><div style="height:100%;width:0%;background:#00E676;border-radius:1px;"></div></div>
+            <div style="font-size:0.8rem;font-weight:500;color:#00E676;width:40px;text-align:right;">€0</div>
           </div>
         </div>
         <div style="background:rgba(0,0,0,0.25);border-radius:4px;padding:16px;display:flex;justify-content:space-between;align-items:center;">
           <div>
             <div style="font-size:0.66rem;color:rgba(200,180,255,0.52);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">Available Balance</div>
-            <div style="font-size:1.4rem;font-weight:800;font-family:'Inter',sans-serif;color:#C8A97E;letter-spacing:-0.02em;">€778</div>
+            <div style="font-size:1.4rem;font-weight:800;font-family:'Inter',sans-serif;color:#C8A97E;letter-spacing:-0.02em;">€0</div>
             <div style="font-size:0.68rem;color:rgba(255,255,255,0.2);margin-top:2px;">After 5% Fortis fee</div>
           </div>
           <button onclick="showToast('Payout initiated — arrives in 1-2 business days')" style="padding:10px 18px;background:#f0f0f5;border:none;color:#0d0818;border-radius:16px;font-size:0.8rem;font-weight:700;cursor:pointer;letter-spacing:0.02em;">Request Payout</button>
         </div>
       </div>
 
-      <!-- Top Fans -->
-      <div style="background:rgba(255,255,255,0.025);border:1px solid rgba(123,47,255,0.28);border-radius:16px;padding:22px;;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">
+      <!-- Top Fans (hidden until fans exist) -->
+      <div id="artistTopFansSection" style="display:none;background:rgba(255,255,255,0.025);border:1px solid rgba(123,47,255,0.28);border-radius:16px;padding:22px;;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">
         <div style="font-size:0.66rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(200,180,255,0.52);margin-bottom:18px;">Top Fans</div>
-        <div style="display:flex;flex-direction:column;gap:0;">
-          <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(200,180,255,0.07);">
-            <div style="font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.2);width:16px;text-align:center;">1</div>
-            <div style="width:34px;height:34px;border-radius:50%;background:rgba(200,169,126,0.1);border:1px solid rgba(200,169,126,0.2);display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#C8A97E;flex-shrink:0;">AM</div>
-            <div style="flex:1;"><div style="font-size:0.84rem;font-weight:500;">Alex Morrison</div><div style="font-size:0.7rem;color:rgba(200,180,255,0.52);">Gold · 4 donations</div></div>
-            <div style="font-size:0.84rem;color:#C8A97E;font-weight:600;">€120</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(200,180,255,0.07);">
-            <div style="font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.2);width:16px;text-align:center;">2</div>
-            <div style="width:34px;height:34px;border-radius:50%;background:rgba(200,180,255,0.07);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.4);flex-shrink:0;">SK</div>
-            <div style="flex:1;"><div style="font-size:0.84rem;font-weight:500;">Sarah K.</div><div style="font-size:0.7rem;color:rgba(200,180,255,0.52);">Silver · 2 donations</div></div>
-            <div style="font-size:0.84rem;color:rgba(200,180,255,0.72);font-weight:500;">€75</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;padding:10px 0;">
-            <div style="font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.2);width:16px;text-align:center;">3</div>
-            <div style="width:34px;height:34px;border-radius:50%;background:rgba(200,180,255,0.07);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.4);flex-shrink:0;">MD</div>
-            <div style="flex:1;"><div style="font-size:0.84rem;font-weight:500;">Mike D.</div><div style="font-size:0.7rem;color:rgba(200,180,255,0.52);">Fan · 1 donation</div></div>
-            <div style="font-size:0.84rem;color:rgba(200,180,255,0.72);font-weight:500;">€50</div>
-          </div>
-        </div>
+        <div id="artistTopFansList" style="display:flex;flex-direction:column;gap:0;"></div>
         <button onclick="showToast('Message sent to all fans!')" style="width:100%;margin-top:16px;padding:10px;background:transparent;border:1px solid rgba(123,47,255,0.28);color:rgba(200,180,255,0.62);border-radius:16px;cursor:pointer;font-size:0.78rem;letter-spacing:0.04em;;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">Broadcast to All Fans</button>
       </div>
 
@@ -3281,22 +3235,7 @@
           <div style="font-size:0.66rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(200,180,255,0.52);">Merch Store</div>
           <button onclick="showToast('Add product flow coming soon')" style="padding:4px 12px;background:transparent;border:1px solid rgba(123,47,255,0.28);color:rgba(200,180,255,0.62);border-radius:16px;font-size:0.72rem;cursor:pointer;letter-spacing:0.04em;;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">+ Add Item</button>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div style="border:1px solid rgba(200,180,255,0.11);border-radius:4px;padding:14px;cursor:pointer;" onclick="showToast('12 sold · €180 earned')">
-            <div style="font-size:0.84rem;font-weight:600;margin-bottom:3px;">Luna Tee</div>
-            <div style="font-size:0.72rem;color:rgba(200,180,255,0.55);margin-bottom:6px;">€35 · 12 sold</div>
-            <div style="font-size:0.66rem;color:#00E676;letter-spacing:0.08em;text-transform:uppercase;">In stock</div>
-          </div>
-          <div style="border:1px solid rgba(200,180,255,0.11);border-radius:4px;padding:14px;cursor:pointer;" onclick="showToast('5 sold · €100 earned')">
-            <div style="font-size:0.84rem;font-weight:600;margin-bottom:3px;">Midnight Cap</div>
-            <div style="font-size:0.72rem;color:rgba(200,180,255,0.55);margin-bottom:6px;">€20 · 5 sold</div>
-            <div style="font-size:0.66rem;color:#00E676;letter-spacing:0.08em;text-transform:uppercase;">In stock</div>
-          </div>
-          <div style="border:1px solid rgba(155,111,255,0.15);border-radius:4px;padding:14px;cursor:pointer;" onclick="showToast('3 sold · Digital collectible')">
-            <div style="font-size:0.84rem;font-weight:600;margin-bottom:3px;">Digital Card</div>
-            <div style="font-size:0.72rem;color:rgba(200,180,255,0.55);margin-bottom:6px;">€5 · 3 sold</div>
-            <div style="font-size:0.66rem;color:#9B6FFF;letter-spacing:0.08em;text-transform:uppercase;">Collectible</div>
-          </div>
+        <div id="artistMerchList" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
           <div style="border:1px dashed rgba(255,255,255,0.08);border-radius:4px;padding:14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:72px;" onclick="showToast('Add product flow coming soon')">
             <div style="font-size:1.2rem;color:rgba(255,255,255,0.2);line-height:1;">+</div>
             <div style="font-size:0.72rem;color:rgba(255,255,255,0.2);margin-top:4px;">Add Product</div>
@@ -3316,27 +3255,37 @@
           <input type="text" id="ytUrlInput" placeholder="Paste YouTube URL..." style="flex:1;padding:9px 12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);color:#fff;border-radius:4px;font-size:0.84rem;outline:none;">
           <button onclick="addYouTubeVideo()" style="padding:9px 16px;background:#f0f0f5;border:none;color:#0d0818;border-radius:16px;font-size:0.78rem;font-weight:700;cursor:pointer;white-space:nowrap;">Add</button>
         </div>
-        <div id="artist-videos-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;">
-          <div style="background:rgba(255,255,255,0.025);border:1px solid rgba(200,180,255,0.11);border-radius:16px;overflow:hidden;">
-            <div style="position:relative;padding-bottom:56.25%;height:0;">
-              <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
-            </div>
-            <div style="padding:12px 14px;">
-              <div style="font-weight:500;font-size:0.86rem;">Dubai Sessions Vol.12</div>
-              <div style="font-size:0.7rem;color:rgba(200,180,255,0.52);margin-top:2px;">2hr · Electronic · 89K views</div>
-            </div>
-          </div>
-          <div style="background:rgba(255,255,255,0.025);border:1px solid rgba(200,180,255,0.11);border-radius:16px;overflow:hidden;">
-            <div style="position:relative;padding-bottom:56.25%;height:0;">
-              <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" src="https://www.youtube.com/embed/9bZkp7q19f0?rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
-            </div>
-            <div style="padding:12px 14px;">
-              <div style="font-weight:500;font-size:0.86rem;">Midnight Echo — Live Demo</div>
-              <div style="font-size:0.7rem;color:rgba(200,180,255,0.52);margin-top:2px;">3:47 · Studio session · 12K views</div>
-            </div>
-          </div>
-        </div>
+        <div id="artist-videos-empty" style="padding:20px 0;text-align:center;color:rgba(200,180,255,0.4);font-size:0.8rem;">No videos yet. Click + Add Video to embed a YouTube link.</div>
+        <div id="artist-videos-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;"></div>
       </div>
+
+    <!-- Contact Section -->
+    <div id="artistContactSection" style="background:rgba(255,255,255,0.025);border:1px solid rgba(123,47,255,0.28);border-radius:16px;padding:22px;margin-top:16px;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">
+      <div style="font-size:0.66rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(200,180,255,0.52);margin-bottom:14px;">Contact</div>
+      <div id="artistContactInner" style="display:flex;flex-direction:column;gap:10px;">
+        <div style="color:rgba(200,180,255,0.35);font-size:0.8rem;">No contact info added yet. Edit your profile to add email, phone, or social links.</div>
+      </div>
+    </div>
+
+    <!-- Inline Edit Panel -->
+    <div id="artistEditPanel" style="display:none;background:rgba(255,255,255,0.025);border:1px solid rgba(200,169,126,0.25);border-radius:16px;padding:22px;margin-top:16px;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <div style="font-size:0.66rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#C8A97E;">Edit Profile</div>
+        <button onclick="fmArtistEditClose()" style="background:none;border:none;color:rgba(200,180,255,0.5);cursor:pointer;font-size:1.1rem;line-height:1;">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div><label style="font-size:0.7rem;color:rgba(200,180,255,0.55);display:block;margin-bottom:5px;">Display Name</label><input id="aeDisplayName" type="text" style="width:100%;box-sizing:border-box;padding:9px 12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:8px;font-size:0.85rem;outline:none;"></div>
+        <div><label style="font-size:0.7rem;color:rgba(200,180,255,0.55);display:block;margin-bottom:5px;">City</label><input id="aeCity" type="text" style="width:100%;box-sizing:border-box;padding:9px 12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:8px;font-size:0.85rem;outline:none;"></div>
+        <div><label style="font-size:0.7rem;color:rgba(200,180,255,0.55);display:block;margin-bottom:5px;">Country</label><input id="aeCountry" type="text" style="width:100%;box-sizing:border-box;padding:9px 12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:8px;font-size:0.85rem;outline:none;"></div>
+        <div><label style="font-size:0.7rem;color:rgba(200,180,255,0.55);display:block;margin-bottom:5px;">Public Email</label><input id="aePublicEmail" type="email" style="width:100%;box-sizing:border-box;padding:9px 12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:8px;font-size:0.85rem;outline:none;"></div>
+      </div>
+      <div style="margin-bottom:12px;"><label style="font-size:0.7rem;color:rgba(200,180,255,0.55);display:block;margin-bottom:5px;">Bio</label><textarea id="aeBio" rows="3" style="width:100%;box-sizing:border-box;padding:9px 12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:8px;font-size:0.85rem;outline:none;resize:vertical;font-family:inherit;"></textarea></div>
+      <div id="aeError" style="display:none;color:#FF6B6B;font-size:0.78rem;margin-bottom:10px;"></div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button id="aeSaveBtn" onclick="fmArtistEditSave()" style="padding:10px 24px;background:#f0f0f5;border:none;color:#0d0818;border-radius:16px;font-size:0.82rem;font-weight:700;cursor:pointer;">Save Changes</button>
+        <span style="font-size:0.75rem;color:rgba(200,180,255,0.4);cursor:pointer;" onclick="if(typeof window.fmProfileOpen==='function')window.fmProfileOpen(true)">Full profile settings →</span>
+      </div>
+    </div>
 
     </div><!-- end artist-tab-profile -->
 
@@ -3345,19 +3294,19 @@
 
       <div class="stats-grid-4col" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(200,180,255,0.11);border:1px solid rgba(200,180,255,0.11);border-radius:16px;overflow:hidden;margin-bottom:28px;">
         <div style="background:#0d0818;padding:20px;text-align:center;">
-          <div style="font-size:1.4rem;font-weight:800;font-family:'Inter',sans-serif;color:#fff;letter-spacing:-0.02em;">412K</div>
+          <div style="font-size:1.4rem;font-weight:800;font-family:'Inter',sans-serif;color:#fff;letter-spacing:-0.02em;">0</div>
           <div style="font-size:0.66rem;color:rgba(200,180,255,0.52);margin-top:5px;letter-spacing:0.1em;text-transform:uppercase;">Total Streams</div>
         </div>
         <div style="background:#0d0818;padding:20px;text-align:center;">
-          <div style="font-size:1.4rem;font-weight:800;font-family:'Inter',sans-serif;color:#C8A97E;letter-spacing:-0.02em;">+18%</div>
+          <div style="font-size:1.4rem;font-weight:800;font-family:'Inter',sans-serif;color:#C8A97E;letter-spacing:-0.02em;">—</div>
           <div style="font-size:0.66rem;color:rgba(200,180,255,0.52);margin-top:5px;letter-spacing:0.1em;text-transform:uppercase;">vs Last Month</div>
         </div>
         <div style="background:#0d0818;padding:20px;text-align:center;">
-          <div style="font-size:1.4rem;font-weight:800;font-family:'Inter',sans-serif;color:#00E676;letter-spacing:-0.02em;">3</div>
+          <div style="font-size:1.4rem;font-weight:800;font-family:'Inter',sans-serif;color:#00E676;letter-spacing:-0.02em;">0</div>
           <div style="font-size:0.66rem;color:rgba(200,180,255,0.52);margin-top:5px;letter-spacing:0.1em;text-transform:uppercase;">Violations Blocked</div>
         </div>
         <div style="background:#0d0818;padding:20px;text-align:center;">
-          <div style="font-size:1.4rem;font-weight:800;font-family:'Inter',sans-serif;color:#9B6FFF;letter-spacing:-0.02em;">24</div>
+          <div style="font-size:1.4rem;font-weight:800;font-family:'Inter',sans-serif;color:#9B6FFF;letter-spacing:-0.02em;">0</div>
           <div style="font-size:0.66rem;color:rgba(200,180,255,0.52);margin-top:5px;letter-spacing:0.1em;text-transform:uppercase;">Countries</div>
         </div>
       </div>
@@ -3365,48 +3314,13 @@
       <div style="background:rgba(255,255,255,0.025);border:1px solid rgba(123,47,255,0.28);border-radius:16px;padding:22px;margin-bottom:16px;;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">
         <div style="font-size:0.66rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(200,180,255,0.52);margin-bottom:18px;">Protection Status</div>
         <div style="display:flex;flex-direction:column;gap:0;" id="protectedList">
-          <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(200,180,255,0.07);">
-            <div style="width:5px;height:5px;border-radius:50%;background:#00E676;flex-shrink:0;"></div>
-            <div style="flex:1;"><div style="font-size:0.84rem;font-weight:500;">Midnight Echo</div><div style="font-size:0.7rem;color:rgba(200,180,255,0.52);">FM-2026-441 · Registered Mar 1</div></div>
-            <div style="text-align:right;"><div style="font-size:0.76rem;color:#00E676;font-weight:500;">Protected</div><div style="font-size:0.66rem;color:rgba(200,180,255,0.52);">0 violations</div></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(200,180,255,0.07);">
-            <div style="width:5px;height:5px;border-radius:50%;background:#00E676;flex-shrink:0;"></div>
-            <div style="flex:1;"><div style="font-size:0.84rem;font-weight:500;">Deep Current</div><div style="font-size:0.7rem;color:rgba(200,180,255,0.52);">FM-2026-387 · Registered Feb 20</div></div>
-            <div style="text-align:right;"><div style="font-size:0.76rem;color:#00E676;font-weight:500;">Protected</div><div style="font-size:0.66rem;color:rgba(200,180,255,0.52);">0 violations</div></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(200,180,255,0.07);">
-            <div style="width:5px;height:5px;border-radius:50%;background:#E91E8C;flex-shrink:0;"></div>
-            <div style="flex:1;"><div style="font-size:0.84rem;font-weight:500;">Aurora Light</div><div style="font-size:0.7rem;color:rgba(200,180,255,0.52);">FM-2026-312 · Registered Feb 10</div></div>
-            <div style="text-align:right;"><div style="font-size:0.76rem;color:#E91E8C;font-weight:500;">3 violations blocked</div><div style="font-size:0.66rem;color:rgba(200,180,255,0.52);">YouTube, TikTok, SC</div></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;padding:12px 0;">
-            <div style="width:5px;height:5px;border-radius:50%;background:#00E676;flex-shrink:0;"></div>
-            <div style="flex:1;"><div style="font-size:0.84rem;font-weight:500;">Lost in Dubai</div><div style="font-size:0.7rem;color:rgba(200,180,255,0.52);">FM-2026-441 · Registered Mar 1</div></div>
-            <div style="text-align:right;"><div style="font-size:0.76rem;color:#00E676;font-weight:500;">Protected</div><div style="font-size:0.66rem;color:rgba(200,180,255,0.52);">0 violations</div></div>
-          </div>
+          <div style="padding:20px 0;text-align:center;color:rgba(200,180,255,0.4);font-size:0.8rem;">No tracks protected yet. Use Protect New Track to register your music.</div>
         </div>
       </div>
 
       <div style="background:rgba(255,255,255,0.025);border:1px solid rgba(123,47,255,0.28);border-radius:16px;padding:22px;margin-bottom:16px;;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">
-        <div style="font-size:0.66rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(200,180,255,0.52);margin-bottom:18px;">Streams per Platform</div>
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div style="font-size:0.78rem;color:rgba(200,180,255,0.62);width:90px;">Spotify</div>
-            <div style="flex:1;height:2px;background:rgba(200,180,255,0.11);border-radius:1px;"><div style="height:100%;width:68%;background:#1DB954;border-radius:1px;"></div></div>
-            <div style="font-size:0.8rem;font-weight:500;color:rgba(200,180,255,0.72);width:48px;text-align:right;">280K</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div style="font-size:0.78rem;color:rgba(200,180,255,0.62);width:90px;">YouTube</div>
-            <div style="flex:1;height:2px;background:rgba(200,180,255,0.11);border-radius:1px;"><div style="height:100%;width:22%;background:#FF4444;border-radius:1px;opacity:0.7;"></div></div>
-            <div style="font-size:0.8rem;font-weight:500;color:rgba(200,180,255,0.72);width:48px;text-align:right;">89K</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div style="font-size:0.78rem;color:rgba(200,180,255,0.62);width:90px;">Apple Music</div>
-            <div style="flex:1;height:2px;background:rgba(200,180,255,0.11);border-radius:1px;"><div style="height:100%;width:10%;background:rgba(255,255,255,0.35);border-radius:1px;"></div></div>
-            <div style="font-size:0.8rem;font-weight:500;color:rgba(200,180,255,0.72);width:48px;text-align:right;">43K</div>
-          </div>
-        </div>
+        <div style="font-size:0.66rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(200,180,255,0.52);margin-bottom:12px;">Streams per Platform</div>
+        <div style="padding:16px 0;text-align:center;color:rgba(200,180,255,0.4);font-size:0.8rem;">Connect your streaming platforms to see stats here.</div>
       </div>
 
       <button onclick="showPage('upload');switchProtectTab('detect')" style="width:100%;padding:12px;background:transparent;border:1px solid rgba(200,169,126,0.2);color:#C8A97E;border-radius:16px;cursor:pointer;font-size:0.82rem;font-weight:600;letter-spacing:0.04em;;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">View Full Detection Dashboard →</button>
@@ -3888,8 +3802,8 @@
       <div id="fmAvatarPreview" class="fm-photo-avatar" onclick="document.getElementById('fmAvatarInput').click()" title="Upload photo">
         <span id="fmAvatarLetter">?</span>
       </div>
-      <input type="file" id="fmAvatarInput" accept="image/*" style="display:none" onchange="fmPhotoPreview(this,'fmAvatarPreview','fmAvatarLetter')">
-      <span class="fm-photo-hint">Click to upload profile photo</span>
+      <input type="file" id="fmAvatarInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="fmPhotoPreview(this,'fmAvatarPreview','fmAvatarLetter')">
+      <span class="fm-photo-hint">Click to upload · JPG, PNG or WEBP</span>
     </div>
 
     <!-- Cover photo (venues/stores) -->
@@ -3897,7 +3811,7 @@
       <div id="fmCoverPreview" class="fm-photo-cover" onclick="document.getElementById('fmCoverInput').click()">
         <span>+ Cover Photo</span>
       </div>
-      <input type="file" id="fmCoverInput" accept="image/*" style="display:none" onchange="fmPhotoPreview(this,'fmCoverPreview',null)">
+      <input type="file" id="fmCoverInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="fmPhotoPreview(this,'fmCoverPreview',null)">
     </div>
 
     <!-- Display name (non-Fan roles) -->
@@ -4641,6 +4555,13 @@
   // ── Photo preview ─────────────────────────────────────────────────────────
   function fmPhotoPreview(input, previewId, letterId) {
     var file = input.files[0]; if (!file) return;
+    var allowed = ['image/jpeg', 'image/png', 'image/webp'];
+    if (allowed.indexOf(file.type) < 0) {
+      input.value = '';
+      var errEl = document.getElementById('pfError');
+      if (errEl) { errEl.textContent = 'Please upload a JPG, PNG or WEBP image.'; errEl.style.display = 'block'; }
+      return;
+    }
     if (previewId === 'fmAvatarPreview') _pfPhotoFile = file;
     else                                 _pfCoverFile = file;
     var reader = new FileReader();
@@ -4769,17 +4690,68 @@
     });
   }
 
+  // ── Canvas compression ────────────────────────────────────────────────────
+  function compressImage(file, maxW, maxH, maxBytes) {
+    return new Promise(function(resolve) {
+      var img = new Image();
+      var url = URL.createObjectURL(file);
+      img.onload = function() {
+        URL.revokeObjectURL(url);
+        var w = img.naturalWidth, h = img.naturalHeight;
+        var scale = Math.min(1, maxW / w, maxH / h);
+        var tw = Math.max(1, Math.round(w * scale));
+        var th = Math.max(1, Math.round(h * scale));
+        var canvas = document.createElement('canvas');
+        canvas.width = tw; canvas.height = th;
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, tw, th);
+        ctx.drawImage(img, 0, 0, tw, th);
+        var quality = 0.85;
+        function attempt() {
+          canvas.toBlob(function(blob) {
+            if (!blob) { resolve(file); return; }
+            if (blob.size <= maxBytes || quality <= 0.3) {
+              console.log('[FM] Compressed:', (blob.size / 1024).toFixed(1) + 'KB @ q' + quality.toFixed(1), tw + 'x' + th);
+              resolve(blob);
+            } else {
+              quality = Math.round((quality - 0.1) * 10) / 10;
+              attempt();
+            }
+          }, 'image/jpeg', quality);
+        }
+        attempt();
+      };
+      img.onerror = function() { URL.revokeObjectURL(url); resolve(file); };
+      img.src = url;
+    });
+  }
+
   // ── Upload photo to Supabase Storage ──────────────────────────────────────
   function pfUpload(file, type) {
     var sb = window._sb; var user = window._fmUser;
     if (!sb || !user) return Promise.resolve(null);
-    var ext  = file.name.split('.').pop().toLowerCase();
-    var path = user.id + '/' + type + '-' + Date.now() + '.' + ext;
-    return sb.storage.from('profile-photos').upload(path, file, { upsert: true })
-      .then(function (r) {
-        if (r.error) { console.warn('Photo upload failed:', r.error.message); return null; }
-        return sb.storage.from('profile-photos').getPublicUrl(path).data.publicUrl;
-      }).catch(function () { return null; });
+    var isAvatar = (type === 'avatar');
+    var maxW     = isAvatar ? 400  : 1200;
+    var maxH     = isAvatar ? 400  : 400;
+    var maxBytes = isAvatar ? 200 * 1024 : 500 * 1024;
+    var path     = user.id + '/' + type + '.jpg';
+    return compressImage(file, maxW, maxH, maxBytes).then(function(compressed) {
+      console.log('[FM] Uploading', type, '—', (compressed.size / 1024).toFixed(1) + 'KB');
+      return sb.storage.from('profile-photos').upload(path, compressed, { upsert: true, contentType: 'image/jpeg' });
+    }).then(function(r) {
+      if (r.error) {
+        console.warn('[FM] Photo upload error:', r.error.message, '— check bucket exists and has INSERT policy');
+        return null;
+      }
+      var result = sb.storage.from('profile-photos').getPublicUrl(path);
+      var url = result.data && result.data.publicUrl;
+      console.log('[FM] Photo uploaded, public URL:', url);
+      return url || null;
+    }).catch(function(ex) {
+      console.warn('[FM] Photo upload exception:', ex && ex.message);
+      return null;
+    });
   }
 
   // ── Public profile render ─────────────────────────────────────────────────
@@ -4880,12 +4852,13 @@
     if (window.location.hash && window.location.hash.length > 2) pfHandleHash();
   });
 
-  // ── Populate page-artist header with real user data ───────────────────────
+  // ── Populate page-artist with real user data ─────────────────────────────
   function fmPopulateArtistPage(pf) {
     if (!pf) return;
     var meta = pf.meta || {};
     var name = pf.display_name || pf.full_name || pf.email || 'Artist';
 
+    // Avatar
     var avatarEl = document.getElementById('artistPageAvatar');
     if (avatarEl) {
       if (pf.avatar_url) {
@@ -4898,9 +4871,11 @@
       }
     }
 
+    // Name
     var nameEl = document.getElementById('artistPageName');
     if (nameEl) nameEl.textContent = name;
 
+    // Meta line
     var metaEl = document.getElementById('artistPageMeta');
     if (metaEl) {
       var genre = (meta.genres && meta.genres.length) ? meta.genres[0] : (pf.role || '');
@@ -4908,6 +4883,92 @@
       var since = pf.created_at ? 'Member since ' + new Date(pf.created_at).toLocaleDateString('en-US', {month:'short', year:'numeric'}) : '';
       metaEl.textContent = [genre, loc, since].filter(Boolean).join(' · ');
     }
+
+    // Contact section
+    var contactInner = document.getElementById('artistContactInner');
+    if (contactInner) {
+      var c = '';
+      if (pf.fortis_contact !== false) {
+        c += '<button onclick="alert(\'Fortis contact form — coming soon.\')" style="padding:10px 20px;background:rgba(123,47,255,0.15);border:1px solid rgba(123,47,255,0.35);color:#A06EFF;border-radius:16px;font-size:0.82rem;cursor:pointer;font-family:inherit;text-align:left;">&#x1F4AC; Send Message via Fortis</button>';
+      }
+      if (meta.public_email) c += '<a href="mailto:' + meta.public_email + '" style="display:block;color:rgba(200,180,255,0.7);font-size:0.82rem;text-decoration:none;">&#x2709; ' + meta.public_email + '</a>';
+      if (meta.phone)        c += '<a href="tel:' + meta.phone + '" style="display:block;color:rgba(200,180,255,0.7);font-size:0.82rem;text-decoration:none;">&#128222; ' + meta.phone + '</a>';
+      if (meta.website)      c += '<a href="' + meta.website + '" target="_blank" rel="noopener" style="display:block;color:rgba(200,180,255,0.7);font-size:0.82rem;text-decoration:none;">&#127760; ' + meta.website + '</a>';
+      var socs = [['instagram','IG',meta.instagram],['youtube','YT',meta.youtube],['spotify','SP',meta.spotify],['soundcloud','SC',meta.soundcloud],['mixcloud','MC',meta.mixcloud],['facebook','FB',meta.facebook]].filter(function(s){return s[2];});
+      if (socs.length) {
+        c += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">';
+        socs.forEach(function(s){ c += '<a href="' + s[2] + '" target="_blank" rel="noopener" style="padding:5px 12px;border:1px solid rgba(200,180,255,0.18);border-radius:10px;color:rgba(200,180,255,0.7);font-size:0.72rem;font-weight:600;text-decoration:none;">' + s[1] + '</a>'; });
+        c += '</div>';
+      }
+      if (!c) c = '<div style="color:rgba(200,180,255,0.35);font-size:0.8rem;">No contact info added yet. Edit your profile to add email, phone, or social links.</div>';
+      contactInner.innerHTML = c;
+    }
+  }
+
+  // ── Inline edit panel ─────────────────────────────────────────────────────
+  function fmArtistEditOpen() {
+    var pf   = window._fmProfile || {};
+    var meta = pf.meta || {};
+    var el   = document.getElementById('artistEditPanel'); if (!el) return;
+    document.getElementById('aeDisplayName').value  = pf.display_name || '';
+    document.getElementById('aeCity').value         = pf.city         || '';
+    document.getElementById('aeCountry').value      = pf.country      || '';
+    document.getElementById('aeBio').value          = pf.bio          || '';
+    document.getElementById('aePublicEmail').value  = meta.public_email || '';
+    document.getElementById('aeError').style.display = 'none';
+    el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function fmArtistEditClose() {
+    var el = document.getElementById('artistEditPanel'); if (el) el.style.display = 'none';
+  }
+
+  function fmArtistEditSave() {
+    var sb   = window._sb;
+    var user = window._fmUser;
+    var errEl = document.getElementById('aeError');
+    var btn   = document.getElementById('aeSaveBtn');
+    if (!sb || !user) { errEl.textContent = 'Not logged in.'; errEl.style.display = 'block'; return; }
+
+    var dn      = document.getElementById('aeDisplayName').value.trim();
+    var city    = document.getElementById('aeCity').value.trim();
+    var country = document.getElementById('aeCountry').value.trim();
+    var bio     = document.getElementById('aeBio').value.trim();
+    var pubEmail= document.getElementById('aePublicEmail').value.trim();
+
+    if (!city || !country) { errEl.textContent = 'City and Country are required.'; errEl.style.display = 'block'; return; }
+
+    btn.disabled = true; btn.textContent = 'Saving…';
+    var existingPf = window._fmProfile || {};
+    var newMeta    = Object.assign({}, existingPf.meta || {});
+    if (pubEmail) newMeta.public_email = pubEmail; else delete newMeta.public_email;
+
+    var data = {
+      id: user.id, email: user.email,
+      full_name: existingPf.full_name || null,
+      role: existingPf.role || ((user.user_metadata||{}).role) || 'Fan',
+      display_name: dn || null, city: city, country: country,
+      bio: bio || null, meta: newMeta,
+      fortis_contact: existingPf.fortis_contact !== false,
+      username: existingPf.username || null,
+      is_public: !!(city && country)
+    };
+    if (existingPf.avatar_url) data.avatar_url = existingPf.avatar_url;
+    if (existingPf.cover_url)  data.cover_url  = existingPf.cover_url;
+
+    sb.from('profiles').upsert(data, { onConflict: 'id' }).then(function(r) {
+      btn.disabled = false; btn.textContent = 'Save Changes';
+      if (r && r.error) { errEl.textContent = r.error.message; errEl.style.display = 'block'; return; }
+      return sb.from('profiles').select('*').eq('id', user.id).single();
+    }).then(function(r2) {
+      if (r2 && r2.data) { window._fmProfile = r2.data; fmPopulateArtistPage(r2.data); }
+      fmArtistEditClose();
+      if (typeof showToast === 'function') showToast('Profile updated!');
+    }).catch(function(ex) {
+      btn.disabled = false; btn.textContent = 'Save Changes';
+      errEl.textContent = (ex && ex.message) || 'Save failed.'; errEl.style.display = 'block';
+    });
   }
 
   // ── Override fmGoProfile from auth module ─────────────────────────────────
@@ -4934,6 +4995,9 @@
   window.fmGenerateUsername     = fmGenerateUsername;
   window.fmShowPublicProfile    = fmShowPublicProfile;
   window.fmPopulateArtistPage   = fmPopulateArtistPage;
+  window.fmArtistEditOpen       = fmArtistEditOpen;
+  window.fmArtistEditClose      = fmArtistEditClose;
+  window.fmArtistEditSave       = fmArtistEditSave;
   window._fmResetProfilePrompt  = function () { _profilePromptFired = false; };
 }());
 </script>
