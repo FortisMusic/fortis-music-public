@@ -3330,6 +3330,27 @@
   </div>
 </div>
 
+<!-- VIDEO ADD CONFIRMATION -->
+<div id="ytConfirmOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:1200;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:#1a1230;border:1px solid rgba(200,180,255,0.18);border-radius:18px;padding:28px 28px 24px;max-width:440px;width:100%;box-shadow:0 8px 48px rgba(0,0,0,0.6);">
+    <div style="font-size:0.66rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(200,180,255,0.52);margin-bottom:14px;">Before you add this video</div>
+    <p style="font-size:0.88rem;color:rgba(200,180,255,0.88);margin:0 0 12px;font-weight:600;">By adding this video you confirm that:</p>
+    <ul style="padding-left:18px;margin:0 0 20px;color:rgba(200,180,255,0.7);font-size:0.84rem;line-height:1.85;list-style:disc;">
+      <li>This is your own original content</li>
+      <li>You own all rights to this video</li>
+      <li>Posting content you do not own may result in permanent account ban and legal action</li>
+    </ul>
+    <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-bottom:22px;">
+      <input type="checkbox" id="ytConfirmCheck" onchange="ytConfirmToggle(this.checked)" style="margin-top:3px;width:15px;height:15px;flex-shrink:0;accent-color:#9B6FFF;cursor:pointer;">
+      <span style="font-size:0.82rem;color:rgba(200,180,255,0.8);line-height:1.55;user-select:none;">I confirm this is my own content and I accept full legal responsibility</span>
+    </label>
+    <div style="display:flex;gap:10px;">
+      <button onclick="ytConfirmCancel()" style="flex:1;padding:11px 0;background:transparent;border:1px solid rgba(200,180,255,0.2);color:rgba(200,180,255,0.6);border-radius:14px;font-size:0.84rem;cursor:pointer;font-family:inherit;">Cancel</button>
+      <button id="ytConfirmAddBtn" onclick="ytConfirmAdd()" disabled style="flex:1;padding:11px 0;background:#f0f0f5;border:none;color:#0d0818;border-radius:14px;font-size:0.84rem;font-weight:700;cursor:not-allowed;font-family:inherit;opacity:0.4;">Add Video</button>
+    </div>
+  </div>
+</div>
+
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 
 <!-- PUBLIC PROFILE PAGE -->
@@ -4626,6 +4647,8 @@
     metaKeys.forEach(function (k) { var v = gv(k[0]); if (v) meta[k[1]] = v; });
     if (_pfGenresSel.length) meta.genres      = _pfGenresSel;
     if (_pfDanceSel.length)  meta.dance_styles = _pfDanceSel;
+    var _existingVids = window._fmProfile && window._fmProfile.meta && window._fmProfile.meta.videos;
+    if (Array.isArray(_existingVids) && _existingVids.length) meta.videos = _existingVids;
 
     var btn = document.getElementById('pfSaveBtn');
     btn.disabled = true; btn.textContent = 'Saving…';
@@ -4903,6 +4926,26 @@
       if (!c) c = '<div style="color:rgba(200,180,255,0.35);font-size:0.8rem;">No contact info added yet. Edit your profile to add email, phone, or social links.</div>';
       contactInner.innerHTML = c;
     }
+
+    // Videos
+    var videosGrid  = document.getElementById('artist-videos-grid');
+    var videosEmpty = document.getElementById('artist-videos-empty');
+    if (videosGrid) {
+      var videos = Array.isArray(meta.videos) ? meta.videos : [];
+      videosGrid.innerHTML = '';
+      if (videos.length === 0) {
+        if (videosEmpty) videosEmpty.style.display = '';
+      } else {
+        if (videosEmpty) videosEmpty.style.display = 'none';
+        videos.forEach(function(vid) {
+          var card = document.createElement('div');
+          card.style.cssText = 'background:#1a1428;border:1px solid rgba(200,180,255,0.13);border-radius:14px;overflow:hidden;position:relative;';
+          var delHtml = window._fmUser ? '<button onclick="window.fmRemoveVideo(\'' + vid + '\')" style="position:absolute;top:8px;right:8px;z-index:2;background:rgba(0,0,0,0.65);border:none;color:#fff;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:0.75rem;line-height:1;padding:0;">&#x2715;</button>' : '';
+          card.innerHTML = delHtml + '<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" src="https://www.youtube.com/embed/' + vid + '?rel=0&modestbranding=1" allowfullscreen loading="lazy"></iframe></div>';
+          videosGrid.appendChild(card);
+        });
+      }
+    }
   }
 
   // ── Inline edit panel ─────────────────────────────────────────────────────
@@ -4971,6 +5014,42 @@
     });
   }
 
+  // ── Video persistence ─────────────────────────────────────────────────────
+  function fmSaveVideoToProfile(videoId) {
+    var sb   = window._sb;
+    var user = window._fmUser;
+    if (!sb || !user) return;
+    var pf   = window._fmProfile || {};
+    var meta = Object.assign({}, pf.meta || {});
+    var vids = Array.isArray(meta.videos) ? meta.videos.slice() : [];
+    if (vids.indexOf(videoId) >= 0) return;
+    vids.unshift(videoId);
+    meta.videos = vids;
+    if (!window._fmProfile) window._fmProfile = {};
+    window._fmProfile.meta = meta;
+    fmPopulateArtistPage(window._fmProfile);
+    sb.from('profiles').update({ meta: meta }).eq('id', user.id).then(function(r) {
+      if (r && r.error) console.warn('[FM] Video save error:', r.error.message);
+      else console.log('[FM] Video saved to profile');
+    });
+  }
+
+  function fmRemoveVideo(videoId) {
+    var sb   = window._sb;
+    var user = window._fmUser;
+    if (!sb || !user) return;
+    var pf   = window._fmProfile || {};
+    var meta = Object.assign({}, pf.meta || {});
+    meta.videos = (Array.isArray(meta.videos) ? meta.videos : []).filter(function(v) { return v !== videoId; });
+    if (!window._fmProfile) window._fmProfile = {};
+    window._fmProfile.meta = meta;
+    fmPopulateArtistPage(window._fmProfile);
+    sb.from('profiles').update({ meta: meta }).eq('id', user.id).then(function(r) {
+      if (r && r.error) console.warn('[FM] Video remove error:', r.error.message);
+      else console.log('[FM] Video removed from profile');
+    });
+  }
+
   // ── Override fmGoProfile from auth module ─────────────────────────────────
   window.fmGoProfile = function () {
     if (typeof window.fmAvatarClose === 'function') window.fmAvatarClose();
@@ -4998,6 +5077,8 @@
   window.fmArtistEditOpen       = fmArtistEditOpen;
   window.fmArtistEditClose      = fmArtistEditClose;
   window.fmArtistEditSave       = fmArtistEditSave;
+  window.fmSaveVideoToProfile   = fmSaveVideoToProfile;
+  window.fmRemoveVideo          = fmRemoveVideo;
   window._fmResetProfilePrompt  = function () { _profilePromptFired = false; };
 }());
 </script>
