@@ -150,7 +150,7 @@ function showPage(id) {
   closeAllSubs();
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   var target = document.getElementById('page-' + id);
-  if (target) target.classList.add('active');
+  if (target) { target.classList.add('active'); localStorage.setItem('fm_last_page', id); }
   // Update desktop nav active state
   document.querySelectorAll('.nav-links a').forEach(function(a) {
     a.classList.remove('active');
@@ -1314,6 +1314,10 @@ document.addEventListener('DOMContentLoaded', function() {
   renderEventCards(EVENTS_DB.filter(function(e){ return !e.featured; }));
   renderEventFeatured(EVENTS_DB);
   initHomePage();
+
+  // Restore last visited page
+  var _lastPage = localStorage.getItem('fm_last_page');
+  if (_lastPage && document.getElementById('page-' + _lastPage)) { showPage(_lastPage); }
 
   // Modal outside click handlers
   ['donateModal','unlockModal','bioModal','certModal'].forEach(function(id){
