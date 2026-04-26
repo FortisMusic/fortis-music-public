@@ -645,28 +645,30 @@ function loadDiscoverProfiles(cb) {
   LIVE_PROFILES = [];
   sb.from('profiles')
     .select('id,full_name,display_name,role,country,city,meta,avatar_url,username')
-    .eq('is_public', true)
+    .neq('role', 'Fan')
     .then(function(r) {
       if (r.data && r.data.length) {
-        LIVE_PROFILES = r.data.map(function(p) {
-          var genres = (p.meta && p.meta.genres && p.meta.genres.length) ? p.meta.genres.join(', ') : '';
-          return {
-            id:        p.id,
-            name:      p.display_name || p.full_name,
-            type:      p.role,
-            genre:     genres,
-            country:   p.country || '',
-            city:      p.city || '',
-            followers: '—',
-            streams:   '—',
-            verified:  false,
-            protected: false,
-            emoji:     '🎵',
-            username:  p.username,
-            isLive:    true,
-            avatar_url: p.avatar_url
-          };
-        });
+        LIVE_PROFILES = r.data
+          .filter(function(p) { return !!(p.full_name || p.display_name); })
+          .map(function(p) {
+            var genres = (p.meta && p.meta.genres && p.meta.genres.length) ? p.meta.genres.join(', ') : '';
+            return {
+              id:         p.id,
+              name:       p.display_name || p.full_name,
+              type:       p.role,
+              genre:      genres,
+              country:    p.country || '',
+              city:       p.city || '',
+              followers:  '—',
+              streams:    '—',
+              verified:   false,
+              protected:  false,
+              emoji:      '🎵',
+              username:   p.username,
+              isLive:     true,
+              avatar_url: p.avatar_url
+            };
+          });
       }
       if (cb) cb();
     }).catch(function() { if (cb) cb(); });
