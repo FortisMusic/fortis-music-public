@@ -4259,8 +4259,11 @@
       }
       var uid = r.data.user.id;
       var displayName = document.getElementById('fmSignupDN') ? document.getElementById('fmSignupDN').value.trim() : '';
+      console.log('[FM] Signup insert — uid:', uid, 'role:', role, 'dn:', displayName);
       _sb.from('profiles').insert({ id: uid, email: email, full_name: fullName, role: role, display_name: displayName || null })
-        .then(function () {
+        .then(function (ir) {
+          if (ir && ir.error) console.warn('[FM] Signup insert failed (will recover on Save Profile):', ir.error.message);
+          else console.log('[FM] Signup insert OK');
           btn.disabled = false; btn.textContent = 'Create Account →';
           var sf = document.getElementById('fmSignupForm');
           if (sf) sf.innerHTML = '<div style="text-align:center;padding:24px 0;">'
@@ -4714,17 +4717,29 @@
       _pfPhotoFile ? pfUpload(_pfPhotoFile, 'avatar') : Promise.resolve(null),
       _pfCoverFile ? pfUpload(_pfCoverFile, 'cover')  : Promise.resolve(null)
     ]).then(function (urls) {
+      var existingPf = window._fmProfile || {};
+      var umeta      = (user.user_metadata) || {};
       var data = {
-        city: city.trim(), country: country, bio: bio.trim() || null,
-        display_name: dn.trim() || null, fortis_contact: fortisContact,
-        meta: meta, username: username || null,
-        is_public: !!(city.trim() && country)
+        id:             user.id,
+        email:          user.email,
+        full_name:      existingPf.full_name || umeta.full_name || null,
+        role:           _pfRole,
+        city:           city.trim(),
+        country:        country,
+        bio:            bio.trim() || null,
+        display_name:   dn.trim() || null,
+        fortis_contact: fortisContact,
+        meta:           meta,
+        username:       username || null,
+        is_public:      !!(city.trim() && country)
       };
       if (urls[0]) data.avatar_url = urls[0];
       if (urls[1]) data.cover_url  = urls[1];
-      return sb.from('profiles').update(data).eq('id', user.id);
+      console.log('[FM] Upserting profile:', JSON.stringify(data));
+      return sb.from('profiles').upsert(data, { onConflict: 'id' });
     }).then(function (r) {
       btn.disabled = false; btn.textContent = 'Save Profile →';
+      console.log('[FM] Upsert response:', JSON.stringify(r));
       if (r && r.error) {
         err.textContent = r.error.message + ' (Run SQL migration in Supabase dashboard)';
         err.style.display = 'block'; return;
