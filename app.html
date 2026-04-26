@@ -3122,14 +3122,14 @@
 
     <!-- Artist Profile Header -->
     <div style="border-bottom:1px solid rgba(200,180,255,0.11);padding-bottom:28px;margin-bottom:28px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
-      <div style="width:72px;height:72px;border-radius:50%;background:rgba(200,180,255,0.09);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-weight:800;font-size:1.4rem;flex-shrink:0;color:#9B6FFF;">LR</div>
+      <div id="artistPageAvatar" style="width:72px;height:72px;border-radius:50%;background:rgba(200,180,255,0.09);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-weight:800;font-size:1.4rem;flex-shrink:0;color:#9B6FFF;background-size:cover;background-position:center;">LR</div>
       <div style="flex:1;min-width:200px;">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px;">
-          <h2 style="font-family:'Inter',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:-0.02em;">Luna Rivera</h2>
+          <h2 id="artistPageName" style="font-family:'Inter',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:-0.02em;">Luna Rivera</h2>
           <span style="background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);color:#00E676;padding:2px 10px;border-radius:2px;font-size:0.66rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">Verified</span>
           <span style="background:rgba(155,111,255,0.08);border:1px solid rgba(155,111,255,0.2);color:#9B6FFF;padding:2px 10px;border-radius:2px;font-size:0.66rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">Protected</span>
         </div>
-        <div style="color:rgba(200,180,255,0.55);font-size:0.8rem;font-weight:300;">Electronic · Dubai, UAE · Member since Dec 2025</div>
+        <div id="artistPageMeta" style="color:rgba(200,180,255,0.55);font-size:0.8rem;font-weight:300;">Electronic · Dubai, UAE · Member since Dec 2025</div>
         <div style="display:flex;gap:20px;margin-top:10px;flex-wrap:wrap;">
           <div><span style="font-weight:600;color:#fff;font-size:0.92rem;">4</span> <span style="color:rgba(200,180,255,0.55);font-size:0.78rem;">protected tracks</span></div>
           <div><span style="font-weight:600;color:#C8A97E;font-size:0.92rem;">€820</span> <span style="color:rgba(200,180,255,0.55);font-size:0.78rem;">total earned</span></div>
@@ -3139,6 +3139,7 @@
       </div>
       <div style="display:flex;flex-direction:column;gap:8px;">
         <button onclick="showPage('upload')" style="padding:10px 20px;background:#f0f0f5;border:none;color:#0d0818;border-radius:16px;font-size:0.82rem;font-weight:700;cursor:pointer;letter-spacing:0.02em;">Protect New Track</button>
+        <button onclick="if(typeof window.fmProfileOpen==='function')window.fmProfileOpen(true)" style="padding:10px 20px;background:transparent;border:1px solid rgba(200,169,126,0.35);color:#C8A97E;border-radius:16px;font-size:0.82rem;cursor:pointer;">Edit Profile</button>
         <button onclick="showPage('fan')" style="padding:10px 20px;background:transparent;border:1px solid rgba(123,47,255,0.28);color:rgba(200,180,255,0.62);border-radius:16px;font-size:0.82rem;cursor:pointer;;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">Fan View</button>
       </div>
     </div>
@@ -4736,13 +4737,15 @@
         }
         fmProfileClose();
         if (user) localStorage.setItem('fm_pf_done_' + user.id, '1');
-        if (typeof showToast === 'function') showToast('Profile saved! Opening your profile…');
-        // Navigate to the user's public profile page
-        setTimeout(function () { fmShowPublicProfile(user.id); }, 250);
+        if (typeof showToast === 'function') showToast('Profile saved!');
+        fmPopulateArtistPage(window._fmProfile);
+        if (typeof showPage === 'function') showPage('artist');
       }).catch(function () {
         fmProfileClose();
         if (user) localStorage.setItem('fm_pf_done_' + user.id, '1');
         if (typeof showToast === 'function') showToast('Profile saved!');
+        fmPopulateArtistPage(window._fmProfile);
+        if (typeof showPage === 'function') showPage('artist');
       });
     }).catch(function (ex) {
       btn.disabled = false; btn.textContent = 'Save Profile →';
@@ -4862,13 +4865,44 @@
     if (window.location.hash && window.location.hash.length > 2) pfHandleHash();
   });
 
+  // ── Populate page-artist header with real user data ───────────────────────
+  function fmPopulateArtistPage(pf) {
+    if (!pf) return;
+    var meta = pf.meta || {};
+    var name = pf.display_name || pf.full_name || pf.email || 'Artist';
+
+    var avatarEl = document.getElementById('artistPageAvatar');
+    if (avatarEl) {
+      if (pf.avatar_url) {
+        avatarEl.style.backgroundImage = 'url(' + pf.avatar_url + ')';
+        avatarEl.textContent = '';
+      } else {
+        avatarEl.style.backgroundImage = '';
+        var initials = name.split(' ').map(function(w){return w[0]||'';}).join('').slice(0,2).toUpperCase() || '?';
+        avatarEl.textContent = initials;
+      }
+    }
+
+    var nameEl = document.getElementById('artistPageName');
+    if (nameEl) nameEl.textContent = name;
+
+    var metaEl = document.getElementById('artistPageMeta');
+    if (metaEl) {
+      var genre = (meta.genres && meta.genres.length) ? meta.genres[0] : (pf.role || '');
+      var loc   = [pf.city, pf.country].filter(Boolean).join(', ');
+      var since = pf.created_at ? 'Member since ' + new Date(pf.created_at).toLocaleDateString('en-US', {month:'short', year:'numeric'}) : '';
+      metaEl.textContent = [genre, loc, since].filter(Boolean).join(' · ');
+    }
+  }
+
   // ── Override fmGoProfile from auth module ─────────────────────────────────
   window.fmGoProfile = function () {
     if (typeof window.fmAvatarClose === 'function') window.fmAvatarClose();
     var pf   = window._fmProfile || {};
     var user = window._fmUser;
-    if (user && pf.city && pf.country) {
-      fmShowPublicProfile(user.id);
+    if (user) {
+      fmPopulateArtistPage(pf);
+      if (typeof showPage === 'function') showPage('artist');
     } else {
       fmProfileOpen(true);
     }
@@ -4884,6 +4918,7 @@
   window.fmPhotoPreview         = fmPhotoPreview;
   window.fmGenerateUsername     = fmGenerateUsername;
   window.fmShowPublicProfile    = fmShowPublicProfile;
+  window.fmPopulateArtistPage   = fmPopulateArtistPage;
   window._fmResetProfilePrompt  = function () { _profilePromptFired = false; };
 }());
 </script>
