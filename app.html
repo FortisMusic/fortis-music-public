@@ -4706,8 +4706,8 @@
     if (!sb || !user) return Promise.resolve(null);
     var isAvatar = (type === 'avatar');
     var isCardBg = (type === 'card_bg');
-    var maxW     = isAvatar ? 400  : (isCardBg ? 800  : 1200);
-    var maxH     = isAvatar ? 400  : (isCardBg ? 400  : 400);
+    var maxW     = isAvatar ? 400  : (isCardBg ? 220  : 1200);
+    var maxH     = isAvatar ? 400  : (isCardBg ? 280  : 400);
     var maxBytes = isAvatar ? 200 * 1024 : (isCardBg ? 300 * 1024 : 500 * 1024);
     var path     = user.id + '/' + type + '.jpg';
     return compressImage(file, maxW, maxH, maxBytes).then(function(compressed) {
