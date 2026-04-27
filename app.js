@@ -163,6 +163,7 @@ function showPage(id) {
   if (id === 'home')     loadHomeTrendingArtists();
   if (id === 'discover') loadDiscoverProfiles(filterArtists);
   if (id === 'artist') { if (typeof window.fmPopulateArtistPage === 'function') window.fmPopulateArtistPage(window._fmProfile); }
+  if (id === 'edit-profile') { if (typeof window.epOpen === 'function') window.epOpen(); }
   if (id === 'gear') setTimeout(function(){ renderGearCards(); }, 50);
   if (id === 'studio') setTimeout(renderStudioCards, 50);
   if (id === 'dance') setTimeout(renderDanceCards, 50);
@@ -782,7 +783,7 @@ function fmRenderProfileCard(a, mode) {
 
   // Overlay — only when there is a photo background
   var overlay = cardBg
-    ? '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.5) 45%,rgba(0,0,0,0.05) 100%);pointer-events:none;"></div>'
+    ? '<div style="position:absolute;inset:0;background:linear-gradient(to top right,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.45) 40%,rgba(0,0,0,0.0) 100%);pointer-events:none;"></div>'
     : '';
 
   // Avatar — 60px circle with 2.5px white border
