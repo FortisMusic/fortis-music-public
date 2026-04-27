@@ -3761,7 +3761,7 @@
         <span id="fmCardBgHint">+ Card Background</span>
       </div>
       <input type="file" id="fmCardBgInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="fmPhotoPreview(this,'fmCardBgPreview','fmCardBgHint')">
-      <span class="fm-photo-hint">Card background · JPG, PNG or WEBP · Max 800×400 · 300 KB</span>
+      <span class="fm-photo-hint">Card background · JPG, PNG or WEBP · Max 220×280 · 300 KB</span>
     </div>
 
     <!-- Display name (non-Fan roles) -->
@@ -4596,7 +4596,7 @@
     if (_pfDanceSel.length)  meta.dance_styles = _pfDanceSel;
     var _existingMeta = (window._fmProfile && window._fmProfile.meta) || {};
     if (Array.isArray(_existingMeta.videos) && _existingMeta.videos.length) meta.videos = _existingMeta.videos;
-    if (_existingMeta.card_bg && !_pfCardBgFile) meta.card_bg = _existingMeta.card_bg;
+    if (_existingMeta.card_bg) meta.card_bg = _existingMeta.card_bg;
 
     var btn = document.getElementById('pfSaveBtn');
     btn.disabled = true; btn.textContent = 'Saving…';
@@ -4630,6 +4630,7 @@
       if (urls[1]) data.cover_url  = urls[1];
       if (urls[2]) data.meta.card_bg = urls[2];
       console.log('[FM] Upserting profile:', JSON.stringify(data));
+      console.log('[FM] meta being sent to Supabase:', JSON.stringify(data.meta));
       return sb.from('profiles').upsert(data, { onConflict: 'id' });
     }).then(function (r) {
       btn.disabled = false; btn.textContent = 'Save Profile →';
