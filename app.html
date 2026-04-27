@@ -5732,7 +5732,24 @@
     var a = { id: '', name: name || 'Artist', type: type, city: city, genre: genre, followers: '—', streams: '—', avatar_url: avu, meta: { card_bg: cardBgUrl } };
     container.innerHTML = fmRenderProfileCard(a, 'preview');
     var card = container.firstChild;
-    if (card) { card.style.cursor = 'default'; card.removeAttribute('onclick'); }
+    if (card) {
+      card.style.cursor = 'default';
+      card.removeAttribute('onclick');
+      // Override background with exact crop position so preview matches the drag state
+      if (cardBgUrl) {
+        var cropImg = document.getElementById('epCropImg');
+        if (cropImg && cropImg.naturalWidth) {
+          var dispW = parseInt(cropImg.style.width)  || 0;
+          var dispH = parseInt(cropImg.style.height) || 0;
+          if (dispW && dispH) {
+            card.style.backgroundImage    = 'url(' + cardBgUrl + ')';
+            card.style.backgroundSize     = dispW + 'px ' + dispH + 'px';
+            card.style.backgroundPosition = _epImgOffsetX + 'px ' + _epImgOffsetY + 'px';
+            card.style.backgroundRepeat   = 'no-repeat';
+          }
+        }
+      }
+    }
   }
 
   function epCropToBlob() {
@@ -5742,12 +5759,23 @@
       var canvas = document.createElement('canvas');
       canvas.width = 220; canvas.height = 280;
       var ctx = canvas.getContext('2d');
-      var dispW = parseInt(img.style.width)  || img.naturalWidth;
-      var dispH = parseInt(img.style.height) || img.naturalHeight;
+      var dispW  = parseInt(img.style.width)  || img.naturalWidth;
+      var dispH  = parseInt(img.style.height) || img.naturalHeight;
       var scaleX = img.naturalWidth  / dispW;
       var scaleY = img.naturalHeight / dispH;
       ctx.drawImage(img, -_epImgOffsetX * scaleX, -_epImgOffsetY * scaleY, 220 * scaleX, 280 * scaleY, 0, 0, 220, 280);
-      canvas.toBlob(function(blob) { resolve(blob); }, 'image/jpeg', 0.92);
+      var maxBytes  = 300 * 1024;
+      var qualities = [0.92, 0.82, 0.72];
+      var idx = 0;
+      function tryQuality() {
+        canvas.toBlob(function(blob) {
+          if (!blob) { resolve(null); return; }
+          if (blob.size <= maxBytes || idx >= qualities.length - 1) { resolve(blob); return; }
+          idx++;
+          tryQuality();
+        }, 'image/jpeg', qualities[idx]);
+      }
+      tryQuality();
     });
   }
 
