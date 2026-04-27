@@ -782,7 +782,7 @@ function fmRenderProfileCard(a, mode) {
 
   // Overlay — only when there is a photo background
   var overlay = cardBg
-    ? '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.75) 0%,rgba(0,0,0,0.35) 40%,rgba(0,0,0,0.05) 100%);pointer-events:none;"></div>'
+    ? '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.5) 45%,rgba(0,0,0,0.05) 100%);pointer-events:none;"></div>'
     : '';
 
   // Avatar — 60px circle with 2.5px white border
