@@ -3066,7 +3066,7 @@
       </div>
       <div style="display:flex;flex-direction:column;gap:8px;">
         <button onclick="showPage('upload')" style="padding:10px 20px;background:#f0f0f5;border:none;color:#0d0818;border-radius:16px;font-size:0.82rem;font-weight:700;cursor:pointer;letter-spacing:0.02em;">Protect New Track</button>
-        <button onclick="fmArtistEditOpen()" style="padding:10px 20px;background:transparent;border:1px solid rgba(200,169,126,0.35);color:#C8A97E;border-radius:16px;font-size:0.82rem;cursor:pointer;">Edit Profile</button>
+        <button onclick="showPage('edit-profile')" style="padding:10px 20px;background:transparent;border:1px solid rgba(200,169,126,0.35);color:#C8A97E;border-radius:16px;font-size:0.82rem;cursor:pointer;">Edit Profile</button>
         <button onclick="showPage('fan')" style="padding:10px 20px;background:transparent;border:1px solid rgba(123,47,255,0.28);color:rgba(200,180,255,0.62);border-radius:16px;font-size:0.82rem;cursor:pointer;;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">Fan View</button>
       </div>
     </div>
@@ -3247,6 +3247,185 @@
 
     </div><!-- end artist-tab-dashboard -->
 
+  </div>
+</div>
+
+<!-- EDIT PROFILE PAGE -->
+<style>
+  .ep-grid{display:grid;grid-template-columns:300px 1fr;gap:32px;align-items:start;}
+  @media(max-width:780px){.ep-grid{grid-template-columns:1fr;}}
+  .ep-card{background:rgba(255,255,255,0.025);border:1px solid rgba(123,47,255,0.28);border-radius:16px;padding:22px;box-shadow:var(--card-shadow);}
+  .ep-label{font-size:0.72rem;color:rgba(200,180,255,0.55);display:block;margin-bottom:6px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;}
+  .ep-label-sm{font-size:0.68rem;color:rgba(200,180,255,0.45);display:block;margin-bottom:5px;letter-spacing:0.06em;text-transform:uppercase;}
+  .ep-input{width:100%;box-sizing:border-box;padding:10px 14px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:10px;font-size:0.9rem;outline:none;font-family:inherit;}
+  .ep-input-sm{width:100%;box-sizing:border-box;padding:9px 12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);color:#fff;border-radius:8px;font-size:0.84rem;outline:none;font-family:inherit;}
+  .ep-input:focus,.ep-input-sm:focus{border-color:rgba(123,47,255,0.5);}
+  .ep-section-head{font-size:0.72rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(200,180,255,0.52);margin-bottom:14px;}
+  #epCropContainer:active{cursor:grabbing;}
+</style>
+<div class="page" id="page-edit-profile">
+  <div style="max-width:1000px;margin:0 auto;padding:40px 24px 100px;">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <button onclick="epCancel()" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;border:1px solid rgba(200,180,255,0.18);background:rgba(200,180,255,0.06);color:rgba(200,180,255,0.6);font-size:0.78rem;cursor:pointer;font-family:inherit;margin-bottom:16px;">&#x2190; Back to Profile</button>
+        <h1 style="font-family:'Inter',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-0.02em;margin:0 0 4px;">Edit Profile</h1>
+        <div style="font-size:0.82rem;color:rgba(200,180,255,0.5);">Update your public artist profile</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;padding-top:42px;">
+        <button onclick="epCancel()" style="padding:10px 20px;background:transparent;border:1px solid rgba(200,180,255,0.2);color:rgba(200,180,255,0.6);border-radius:16px;font-size:0.82rem;cursor:pointer;font-family:inherit;">Cancel</button>
+        <button id="epSaveBtn" onclick="epSave()" style="padding:10px 24px;background:#f0f0f5;border:none;color:#0d0818;border-radius:16px;font-size:0.82rem;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:0.02em;">Save Profile &#x2192;</button>
+      </div>
+    </div>
+
+    <!-- Inline messages -->
+    <div id="epError" style="display:none;background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.3);border-radius:10px;padding:10px 16px;font-size:0.82rem;color:#FF6B6B;margin-bottom:20px;"></div>
+    <div id="epContactWarn" style="display:none;background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.3);border-radius:10px;padding:10px 16px;font-size:0.82rem;color:#FF6B6B;margin-bottom:20px;">Please add at least one contact method or keep the Fortis contact form enabled.</div>
+
+    <!-- Two-column grid -->
+    <div class="ep-grid">
+
+      <!-- LEFT COLUMN -->
+      <div style="display:flex;flex-direction:column;gap:24px;">
+
+        <!-- Avatar -->
+        <div class="ep-card">
+          <div class="ep-section-head">Profile Photo</div>
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div id="epAvatarPreview" onclick="document.getElementById('epAvatarInput').click()" style="width:100px;height:100px;border-radius:50%;background:rgba(200,180,255,0.09);border:2px dashed rgba(200,180,255,0.25);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;overflow:hidden;background-size:cover;background-position:center;">
+              <span id="epAvatarHint" style="font-size:2rem;color:rgba(200,180,255,0.35);line-height:1;">+</span>
+            </div>
+            <div>
+              <div style="font-size:0.82rem;color:rgba(200,180,255,0.7);margin-bottom:4px;">Click to upload</div>
+              <div style="font-size:0.72rem;color:rgba(200,180,255,0.4);">JPG, PNG or WEBP · 400×400 · 200KB</div>
+              <input type="file" id="epAvatarInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="epAvatarChange(this)">
+            </div>
+          </div>
+        </div>
+
+        <!-- Card background -->
+        <div class="ep-card">
+          <div class="ep-section-head">Card Background</div>
+
+          <!-- Upload area -->
+          <div id="epCardBgUploadArea" onclick="document.getElementById('epCardBgInput').click()" style="height:80px;border:2px dashed rgba(200,180,255,0.2);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;">
+            <div style="font-size:1.4rem;color:rgba(200,180,255,0.3);line-height:1;">+</div>
+            <div style="font-size:0.78rem;color:rgba(200,180,255,0.5);">Upload Card Background</div>
+            <div style="font-size:0.68rem;color:rgba(200,180,255,0.35);">JPG, PNG or WEBP · 220&#xD7;280 crop · 300KB</div>
+          </div>
+
+          <!-- Drag to reposition -->
+          <div id="epCardBgCropArea" style="display:none;">
+            <div style="font-size:0.72rem;color:rgba(200,180,255,0.5);margin-bottom:8px;">Drag image to reposition &middot; <span onclick="epClearCardBg()" style="color:#E91E8C;cursor:pointer;">Remove</span></div>
+            <div id="epCropContainer" style="position:relative;width:220px;height:280px;overflow:hidden;border-radius:16px;cursor:grab;border:2px solid rgba(200,180,255,0.2);margin:0 auto;touch-action:none;">
+              <img id="epCropImg" crossorigin="anonymous" style="position:absolute;user-select:none;pointer-events:none;left:0;top:0;" draggable="false" alt="">
+            </div>
+          </div>
+
+          <input type="file" id="epCardBgInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="epCardBgChange(this)">
+        </div>
+
+        <!-- Live preview -->
+        <div class="ep-card">
+          <div class="ep-section-head">Live Preview</div>
+          <div style="display:flex;justify-content:center;">
+            <div id="epCardPreview"></div>
+          </div>
+        </div>
+
+      </div><!-- end left column -->
+
+      <!-- RIGHT COLUMN -->
+      <div style="display:flex;flex-direction:column;gap:16px;">
+
+        <!-- Display name -->
+        <div>
+          <label class="ep-label" for="epDisplayName">Artist / Band Name</label>
+          <input id="epDisplayName" type="text" class="ep-input" oninput="epUpdatePreview()" placeholder="Your artist or band name">
+        </div>
+
+        <!-- City + Country -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <label class="ep-label" for="epCity">City <span style="color:#FF6B6B;">*</span></label>
+            <input id="epCity" type="text" class="ep-input" oninput="epUpdatePreview()" placeholder="Your city">
+          </div>
+          <div>
+            <label class="ep-label" for="epCountry">Country <span style="color:#FF6B6B;">*</span></label>
+            <select id="epCountry" class="ep-input" onchange="epUpdatePreview()" style="cursor:pointer;">
+              <option value="">Select country</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Username -->
+        <div>
+          <label class="ep-label" for="epUsername">Username</label>
+          <input id="epUsername" type="text" class="ep-input" oninput="epUsernameInput(this)" placeholder="yourname">
+          <div style="font-size:0.72rem;color:rgba(200,180,255,0.4);margin-top:5px;">fortismusic.co/artist/<span id="epUsernamePreview" style="color:rgba(200,180,255,0.7);">yourname</span></div>
+        </div>
+
+        <!-- Bio -->
+        <div>
+          <label class="ep-label" for="epBio">Bio</label>
+          <textarea id="epBio" rows="4" class="ep-input" style="resize:vertical;line-height:1.55;" placeholder="Tell fans about yourself..."></textarea>
+        </div>
+
+        <!-- Genres -->
+        <div>
+          <label class="ep-label">Genres</label>
+          <div id="epGenreChips" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+        </div>
+
+        <!-- Social links -->
+        <div style="border-top:1px solid rgba(200,180,255,0.1);padding-top:16px;">
+          <div class="ep-section-head">Social &amp; Contact Links</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div><label class="ep-label-sm" for="epInstagram">Instagram</label><input id="epInstagram" type="url" class="ep-input-sm" placeholder="https://..."></div>
+            <div><label class="ep-label-sm" for="epYoutube">YouTube</label><input id="epYoutube" type="url" class="ep-input-sm" placeholder="https://..."></div>
+            <div><label class="ep-label-sm" for="epSpotify">Spotify</label><input id="epSpotify" type="url" class="ep-input-sm" placeholder="https://..."></div>
+            <div><label class="ep-label-sm" for="epSoundcloud">SoundCloud</label><input id="epSoundcloud" type="url" class="ep-input-sm" placeholder="https://..."></div>
+            <div><label class="ep-label-sm" for="epMixcloud">Mixcloud</label><input id="epMixcloud" type="url" class="ep-input-sm" placeholder="https://..."></div>
+            <div><label class="ep-label-sm" for="epFacebook">Facebook</label><input id="epFacebook" type="url" class="ep-input-sm" placeholder="https://..."></div>
+            <div><label class="ep-label-sm" for="epWebsite">Website</label><input id="epWebsite" type="url" class="ep-input-sm" placeholder="https://..."></div>
+            <div><label class="ep-label-sm" for="epPublicEmail">Public Email</label><input id="epPublicEmail" type="email" class="ep-input-sm" placeholder="contact@..."></div>
+            <div style="grid-column:1/-1;"><label class="ep-label-sm" for="epPhone">Phone (optional)</label><input id="epPhone" type="tel" class="ep-input-sm" placeholder="+1 ..."></div>
+          </div>
+        </div>
+
+        <!-- Toggles -->
+        <div style="border-top:1px solid rgba(200,180,255,0.1);padding-top:16px;display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <div>
+              <div style="font-size:0.84rem;color:#fff;font-weight:500;">Public Profile</div>
+              <div id="epPublicLabel" style="font-size:0.72rem;color:rgba(200,180,255,0.4);margin-top:2px;">Profile visible to everyone</div>
+            </div>
+            <label class="fm-toggle">
+              <input type="checkbox" id="epIsPublic" checked onchange="epPublicToggle()">
+              <span class="fm-toggle-track"><span class="fm-toggle-thumb"></span></span>
+            </label>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <div>
+              <div style="font-size:0.84rem;color:#fff;font-weight:500;">Fortis Contact Form</div>
+              <div style="font-size:0.72rem;color:rgba(200,180,255,0.4);margin-top:2px;">Allow fans to contact you through Fortis</div>
+            </div>
+            <label class="fm-toggle">
+              <input type="checkbox" id="epFortisContact" checked onchange="epContactToggle()">
+              <span class="fm-toggle-track"><span class="fm-toggle-thumb"></span></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Bottom save row -->
+        <div style="display:flex;gap:10px;padding-top:8px;">
+          <button onclick="epCancel()" style="flex:1;padding:12px;background:transparent;border:1px solid rgba(200,180,255,0.2);color:rgba(200,180,255,0.6);border-radius:16px;font-size:0.84rem;cursor:pointer;font-family:inherit;">Cancel</button>
+          <button id="epSaveBtn2" onclick="epSave()" style="flex:2;padding:12px;background:#f0f0f5;border:none;color:#0d0818;border-radius:16px;font-size:0.84rem;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:0.02em;">Save Profile &#x2192;</button>
+        </div>
+
+      </div><!-- end right column -->
+    </div><!-- end ep-grid -->
   </div>
 </div>
 
@@ -5250,6 +5429,448 @@
   window.fmSendMessage          = fmSendMessage;
   window.fmLoadUnreadCount      = fmLoadUnreadCount;
   window.fmFollowProfile        = fmFollowProfile;
+  window._fmResetProfilePrompt  = function () { _profilePromptFired = false; };
+
+  // ── Edit Profile Page (ep*) ───────────────────────────────────────────────
+  var _epAvatarFile    = null;
+  var _epCardBgFile    = null;
+  var _epCardBgCleared = false;
+  var _epCardBgChanged = false;
+  var _epCardBgObjUrl  = null;
+  var _epGenresSel     = [];
+  var _epDragging      = false;
+  var _epDragStartX    = 0, _epDragStartY = 0;
+  var _epImgOffsetX    = 0, _epImgOffsetY = 0;
+  var _epImgStartOX    = 0, _epImgStartOY = 0;
+
+  function epOpen() {
+    var pf   = window._fmProfile || {};
+    var meta = pf.meta || {};
+
+    _epAvatarFile    = null;
+    _epCardBgFile    = null;
+    _epCardBgCleared = false;
+    _epCardBgChanged = false;
+    _epImgOffsetX    = 0;
+    _epImgOffsetY    = 0;
+    if (_epCardBgObjUrl) { URL.revokeObjectURL(_epCardBgObjUrl); _epCardBgObjUrl = null; }
+
+    // Populate country dropdown once
+    var csel = document.getElementById('epCountry');
+    if (csel && csel.options.length <= 1) {
+      COUNTRIES.forEach(function(c) {
+        var opt = document.createElement('option');
+        opt.value = c; opt.textContent = c;
+        csel.appendChild(opt);
+      });
+    }
+
+    // Pre-fill fields
+    function sv(id, val) { var e = document.getElementById(id); if (e) e.value = val || ''; }
+    sv('epDisplayName', pf.display_name || pf.full_name || '');
+    sv('epCity',        pf.city         || '');
+    sv('epBio',         pf.bio          || '');
+    sv('epUsername',    pf.username      || '');
+    sv('epInstagram',   meta.instagram   || '');
+    sv('epYoutube',     meta.youtube     || '');
+    sv('epSpotify',     meta.spotify     || '');
+    sv('epSoundcloud',  meta.soundcloud  || '');
+    sv('epMixcloud',    meta.mixcloud    || '');
+    sv('epFacebook',    meta.facebook    || '');
+    sv('epWebsite',     meta.website     || '');
+    sv('epPublicEmail', meta.public_email || '');
+    sv('epPhone',       meta.phone       || '');
+    if (csel && pf.country) csel.value = pf.country;
+
+    epUsernameInput(document.getElementById('epUsername'));
+
+    var fc = document.getElementById('epFortisContact');
+    if (fc) fc.checked = pf.fortis_contact !== false;
+
+    var ip = document.getElementById('epIsPublic');
+    if (ip) ip.checked = pf.is_public !== false;
+    epPublicToggle();
+
+    _epGenresSel = (meta.genres || []).slice();
+    epRenderGenreChips();
+
+    // Avatar preview
+    var avPrev = document.getElementById('epAvatarPreview');
+    var avHint = document.getElementById('epAvatarHint');
+    if (avPrev) {
+      if (pf.avatar_url) {
+        avPrev.style.backgroundImage    = 'url(' + pf.avatar_url + ')';
+        avPrev.style.backgroundSize     = 'cover';
+        avPrev.style.backgroundPosition = 'center';
+        if (avHint) avHint.style.display = 'none';
+      } else {
+        avPrev.style.backgroundImage = '';
+        if (avHint) avHint.style.display = '';
+      }
+    }
+
+    // Card bg preview
+    var uploadArea = document.getElementById('epCardBgUploadArea');
+    var cropArea   = document.getElementById('epCardBgCropArea');
+    if (meta.card_bg) {
+      if (uploadArea) uploadArea.style.display = 'none';
+      if (cropArea)   cropArea.style.display   = '';
+      var img = document.getElementById('epCropImg');
+      if (img) {
+        img.crossOrigin = 'anonymous';
+        img.onload = function() { epFitCropImage(); epUpdatePreview(); };
+        img.src = meta.card_bg;
+        _epCardBgObjUrl = meta.card_bg;
+      }
+    } else {
+      if (uploadArea) uploadArea.style.display = '';
+      if (cropArea)   cropArea.style.display   = 'none';
+      var ci = document.getElementById('epCropImg');
+      if (ci) ci.src = '';
+    }
+
+    var errEl = document.getElementById('epError');
+    var warnEl = document.getElementById('epContactWarn');
+    if (errEl)  errEl.style.display  = 'none';
+    if (warnEl) warnEl.style.display = 'none';
+
+    epInitDragListeners();
+    epUpdatePreview();
+  }
+
+  function epCancel() {
+    if (typeof showPage === 'function') showPage('artist');
+  }
+
+  function epUsernameInput(el) {
+    if (!el) return;
+    var val = el.value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+    el.value = val;
+    var prev = document.getElementById('epUsernamePreview');
+    if (prev) prev.textContent = val || 'yourname';
+  }
+
+  function epPublicToggle() {
+    var el  = document.getElementById('epIsPublic');
+    var lbl = document.getElementById('epPublicLabel');
+    if (!el || !lbl) return;
+    lbl.textContent = el.checked ? 'Profile visible to everyone' : 'Profile is private';
+  }
+
+  function epContactToggle() {
+    var warnEl = document.getElementById('epContactWarn');
+    if (warnEl) warnEl.style.display = 'none';
+  }
+
+  function epRenderGenreChips() {
+    var container = document.getElementById('epGenreChips');
+    if (!container) return;
+    container.innerHTML = '';
+    GENRES.forEach(function(g) {
+      var sel  = _epGenresSel.indexOf(g) !== -1;
+      var chip = document.createElement('div');
+      chip.textContent = g;
+      chip.style.cssText = 'padding:5px 12px;border-radius:20px;font-size:0.75rem;font-weight:600;cursor:pointer;user-select:none;transition:all 0.15s;'
+        + (sel
+          ? 'background:rgba(123,47,255,0.35);border:1px solid rgba(123,47,255,0.6);color:#C8B4FF;'
+          : 'background:rgba(200,180,255,0.06);border:1px solid rgba(200,180,255,0.15);color:rgba(200,180,255,0.6);');
+      chip.onclick = function() {
+        var i = _epGenresSel.indexOf(g);
+        if (i === -1) _epGenresSel.push(g); else _epGenresSel.splice(i, 1);
+        epRenderGenreChips();
+        epUpdatePreview();
+      };
+      container.appendChild(chip);
+    });
+  }
+
+  function epAvatarChange(input) {
+    if (!input.files || !input.files[0]) return;
+    _epAvatarFile = input.files[0];
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var prev = document.getElementById('epAvatarPreview');
+      var hint = document.getElementById('epAvatarHint');
+      if (prev) {
+        prev.style.backgroundImage    = 'url(' + e.target.result + ')';
+        prev.style.backgroundSize     = 'cover';
+        prev.style.backgroundPosition = 'center';
+      }
+      if (hint) hint.style.display = 'none';
+      epUpdatePreview();
+    };
+    reader.readAsDataURL(_epAvatarFile);
+  }
+
+  function epCardBgChange(input) {
+    if (!input.files || !input.files[0]) return;
+    _epCardBgFile    = input.files[0];
+    _epCardBgCleared = false;
+    _epCardBgChanged = true;
+    _epImgOffsetX    = 0;
+    _epImgOffsetY    = 0;
+    if (_epCardBgObjUrl) URL.revokeObjectURL(_epCardBgObjUrl);
+    _epCardBgObjUrl = URL.createObjectURL(_epCardBgFile);
+
+    var img        = document.getElementById('epCropImg');
+    var uploadArea = document.getElementById('epCardBgUploadArea');
+    var cropArea   = document.getElementById('epCardBgCropArea');
+    if (uploadArea) uploadArea.style.display = 'none';
+    if (cropArea)   cropArea.style.display   = '';
+    if (img) {
+      img.onload = function() { epFitCropImage(); epUpdatePreview(); };
+      img.src = _epCardBgObjUrl;
+    }
+  }
+
+  function epClearCardBg() {
+    _epCardBgFile    = null;
+    _epCardBgCleared = true;
+    _epCardBgChanged = false;
+    if (_epCardBgObjUrl) { URL.revokeObjectURL(_epCardBgObjUrl); _epCardBgObjUrl = null; }
+    _epImgOffsetX = 0; _epImgOffsetY = 0;
+    var img = document.getElementById('epCropImg');
+    if (img) img.src = '';
+    var uploadArea = document.getElementById('epCardBgUploadArea');
+    var cropArea   = document.getElementById('epCardBgCropArea');
+    if (uploadArea) uploadArea.style.display = '';
+    if (cropArea)   cropArea.style.display   = 'none';
+    epUpdatePreview();
+  }
+
+  function epFitCropImage() {
+    var img       = document.getElementById('epCropImg');
+    var container = document.getElementById('epCropContainer');
+    if (!img || !container || !img.naturalWidth) return;
+    var cw = 220, ch = 280;
+    var iw = img.naturalWidth, ih = img.naturalHeight;
+    var scale  = Math.max(cw / iw, ch / ih) * 1.5;
+    var dispW  = Math.round(iw * scale);
+    var dispH  = Math.round(ih * scale);
+    img.style.width  = dispW + 'px';
+    img.style.height = dispH + 'px';
+    _epImgOffsetX = Math.round((cw - dispW) / 2);
+    _epImgOffsetY = Math.round((ch - dispH) / 2);
+    epClampOffset(dispW, dispH);
+    img.style.left = _epImgOffsetX + 'px';
+    img.style.top  = _epImgOffsetY + 'px';
+  }
+
+  function epClampOffset(imgW, imgH) {
+    var cw = 220, ch = 280;
+    if (!imgW || !imgH) {
+      var img = document.getElementById('epCropImg');
+      if (!img) return;
+      imgW = parseInt(img.style.width)  || 0;
+      imgH = parseInt(img.style.height) || 0;
+    }
+    if (_epImgOffsetX > 0)        _epImgOffsetX = 0;
+    if (_epImgOffsetY > 0)        _epImgOffsetY = 0;
+    if (_epImgOffsetX < cw - imgW) _epImgOffsetX = cw - imgW;
+    if (_epImgOffsetY < ch - imgH) _epImgOffsetY = ch - imgH;
+  }
+
+  function epInitDragListeners() {
+    var container = document.getElementById('epCropContainer');
+    if (!container || container._epDragBound) return;
+    container._epDragBound = true;
+    container.addEventListener('mousedown',  epDragStart);
+    container.addEventListener('touchstart', epDragStart, { passive: false });
+    document.addEventListener('mousemove',  epDragMove);
+    document.addEventListener('touchmove',  epDragMove,  { passive: false });
+    document.addEventListener('mouseup',    epDragEnd);
+    document.addEventListener('touchend',   epDragEnd);
+  }
+
+  function epDragStart(e) {
+    e.preventDefault();
+    _epDragging   = true;
+    var cx = e.touches ? e.touches[0].clientX : e.clientX;
+    var cy = e.touches ? e.touches[0].clientY : e.clientY;
+    _epDragStartX = cx; _epDragStartY = cy;
+    _epImgStartOX = _epImgOffsetX; _epImgStartOY = _epImgOffsetY;
+    var c = document.getElementById('epCropContainer');
+    if (c) c.style.cursor = 'grabbing';
+  }
+
+  function epDragMove(e) {
+    if (!_epDragging) return;
+    e.preventDefault();
+    var cx = e.touches ? e.touches[0].clientX : e.clientX;
+    var cy = e.touches ? e.touches[0].clientY : e.clientY;
+    _epImgOffsetX = _epImgStartOX + (cx - _epDragStartX);
+    _epImgOffsetY = _epImgStartOY + (cy - _epDragStartY);
+    epClampOffset();
+    var img = document.getElementById('epCropImg');
+    if (img) { img.style.left = _epImgOffsetX + 'px'; img.style.top = _epImgOffsetY + 'px'; }
+    _epCardBgChanged = true;
+    epUpdatePreview();
+  }
+
+  function epDragEnd() {
+    if (!_epDragging) return;
+    _epDragging = false;
+    var c = document.getElementById('epCropContainer');
+    if (c) c.style.cursor = 'grab';
+  }
+
+  function epUpdatePreview() {
+    var container = document.getElementById('epCardPreview');
+    if (!container) return;
+    var name  = (document.getElementById('epDisplayName') || {}).value || 'Artist';
+    var city  = (document.getElementById('epCity')        || {}).value || '';
+    var type  = (window._fmProfile && window._fmProfile.role) || 'Artist';
+    var genre = _epGenresSel.length ? _epGenresSel[0] : '';
+    var avPrev = document.getElementById('epAvatarPreview');
+    var avu = null;
+    if (avPrev && avPrev.style.backgroundImage && avPrev.style.backgroundImage !== 'none') {
+      avu = avPrev.style.backgroundImage.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+    }
+    var cardBgUrl = (_epCardBgCleared || (!_epCardBgObjUrl && !(window._fmProfile && window._fmProfile.meta && window._fmProfile.meta.card_bg)))
+      ? null
+      : (_epCardBgObjUrl || (window._fmProfile && window._fmProfile.meta && window._fmProfile.meta.card_bg) || null);
+    var a = { id: '', name: name || 'Artist', type: type, city: city, genre: genre, followers: '—', streams: '—', avatar_url: avu, meta: { card_bg: cardBgUrl } };
+    container.innerHTML = fmRenderProfileCard(a, 'preview');
+    var card = container.firstChild;
+    if (card) { card.style.cursor = 'default'; card.removeAttribute('onclick'); }
+  }
+
+  function epCropToBlob() {
+    return new Promise(function(resolve) {
+      var img = document.getElementById('epCropImg');
+      if (!img || !img.naturalWidth) { resolve(null); return; }
+      var canvas = document.createElement('canvas');
+      canvas.width = 220; canvas.height = 280;
+      var ctx = canvas.getContext('2d');
+      var dispW = parseInt(img.style.width)  || img.naturalWidth;
+      var dispH = parseInt(img.style.height) || img.naturalHeight;
+      var scaleX = img.naturalWidth  / dispW;
+      var scaleY = img.naturalHeight / dispH;
+      ctx.drawImage(img, -_epImgOffsetX * scaleX, -_epImgOffsetY * scaleY, 220 * scaleX, 280 * scaleY, 0, 0, 220, 280);
+      canvas.toBlob(function(blob) { resolve(blob); }, 'image/jpeg', 0.92);
+    });
+  }
+
+  function epContactOk() {
+    var fc = document.getElementById('epFortisContact');
+    if (fc && fc.checked) return true;
+    return ['epPhone','epWebsite','epPublicEmail','epInstagram','epYoutube','epSpotify','epSoundcloud','epMixcloud','epFacebook'].some(function(id) {
+      var e = document.getElementById(id); return e && e.value.trim();
+    });
+  }
+
+  function epSave() {
+    var errEl  = document.getElementById('epError');
+    var warnEl = document.getElementById('epContactWarn');
+    if (errEl)  errEl.style.display  = 'none';
+    if (warnEl) warnEl.style.display = 'none';
+
+    var city    = (document.getElementById('epCity')    || {}).value || '';
+    var country = (document.getElementById('epCountry') || {}).value || '';
+    if (!city.trim()) { if (errEl) { errEl.textContent = 'City is required.';    errEl.style.display = 'block'; } return; }
+    if (!country)     { if (errEl) { errEl.textContent = 'Country is required.'; errEl.style.display = 'block'; } return; }
+    if (!epContactOk()) { if (warnEl) warnEl.style.display = 'block'; return; }
+
+    var sb   = window._sb;
+    var user = window._fmUser;
+    if (!sb || !user) { if (errEl) { errEl.textContent = 'Not logged in.'; errEl.style.display = 'block'; } return; }
+
+    var btn1 = document.getElementById('epSaveBtn');
+    var btn2 = document.getElementById('epSaveBtn2');
+    function setBtnState(saving) {
+      var t = saving ? 'Saving…' : 'Save Profile →';
+      if (btn1) { btn1.disabled = saving; btn1.textContent = t; }
+      if (btn2) { btn2.disabled = saving; btn2.textContent = t; }
+    }
+    setBtnState(true);
+
+    var existingPf   = window._fmProfile || {};
+    var existingMeta = existingPf.meta || {};
+
+    function gv(id) { var e = document.getElementById(id); return e && e.value.trim() ? e.value.trim() : null; }
+    var meta = {};
+    [['epPhone','phone'],['epWebsite','website'],['epInstagram','instagram'],['epYoutube','youtube'],
+     ['epSpotify','spotify'],['epSoundcloud','soundcloud'],['epMixcloud','mixcloud'],['epFacebook','facebook'],
+     ['epPublicEmail','public_email']].forEach(function(k) { var v = gv(k[0]); if (v) meta[k[1]] = v; });
+    if (_epGenresSel.length)                                             meta.genres      = _epGenresSel;
+    if (Array.isArray(existingMeta.videos) && existingMeta.videos.length) meta.videos    = existingMeta.videos;
+    if (Array.isArray(existingMeta.dance_styles))                          meta.dance_styles = existingMeta.dance_styles;
+    if (existingMeta.card_bg) meta.card_bg = existingMeta.card_bg;
+
+    var dn       = (document.getElementById('epDisplayName') || {}).value || '';
+    var bio      = (document.getElementById('epBio')         || {}).value || '';
+    var username = ((document.getElementById('epUsername')   || {}).value || '').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+    var fc = document.getElementById('epFortisContact');
+    var ip = document.getElementById('epIsPublic');
+
+    // Card bg upload decision
+    var cardBgPromise;
+    if (_epCardBgCleared) {
+      cardBgPromise = Promise.resolve('__clear__');
+    } else if (_epCardBgFile || _epCardBgChanged) {
+      cardBgPromise = epCropToBlob().then(function(blob) {
+        if (!blob) return null;
+        var file = new File([blob], 'card_bg.jpg', { type: 'image/jpeg' });
+        return pfUpload(file, 'card_bg');
+      });
+    } else {
+      cardBgPromise = Promise.resolve(null);
+    }
+
+    Promise.all([
+      _epAvatarFile ? pfUpload(_epAvatarFile, 'avatar') : Promise.resolve(null),
+      cardBgPromise
+    ]).then(function(urls) {
+      var data = {
+        id:             user.id,
+        email:          user.email,
+        full_name:      existingPf.full_name || (user.user_metadata || {}).full_name || null,
+        role:           existingPf.role || 'Artist',
+        city:           city.trim(),
+        country:        country,
+        bio:            bio.trim() || null,
+        display_name:   dn.trim() || null,
+        fortis_contact: fc ? fc.checked : true,
+        username:       username || null,
+        is_public:      ip ? ip.checked : true,
+        meta:           meta
+      };
+      if (existingPf.avatar_url) data.avatar_url = existingPf.avatar_url;
+      if (existingPf.cover_url)  data.cover_url  = existingPf.cover_url;
+      if (urls[0]) data.avatar_url = urls[0];
+      if (urls[1] === '__clear__') { delete data.meta.card_bg; }
+      else if (urls[1])            { data.meta.card_bg = urls[1]; }
+      console.log('[FM] epSave meta:', JSON.stringify(data.meta));
+      return sb.from('profiles').upsert(data, { onConflict: 'id' });
+    }).then(function(r) {
+      setBtnState(false);
+      if (r && r.error) { if (errEl) { errEl.textContent = r.error.message; errEl.style.display = 'block'; } return; }
+      return sb.from('profiles').select('*').eq('id', user.id).single();
+    }).then(function(r2) {
+      if (r2 && r2.data) {
+        window._fmProfile = r2.data;
+        if (typeof fmAuthUIUpdate === 'function') fmAuthUIUpdate();
+        if (typeof window.fmPopulateArtistPage === 'function') window.fmPopulateArtistPage(r2.data);
+      }
+      if (typeof showToast === 'function') showToast('Profile saved!');
+      if (typeof showPage  === 'function') showPage('artist');
+    }).catch(function(ex) {
+      setBtnState(false);
+      if (errEl) { errEl.textContent = (ex && ex.message) || 'Save failed.'; errEl.style.display = 'block'; }
+    });
+  }
+
+  window.epOpen           = epOpen;
+  window.epSave           = epSave;
+  window.epCancel         = epCancel;
+  window.epAvatarChange   = epAvatarChange;
+  window.epCardBgChange   = epCardBgChange;
+  window.epClearCardBg    = epClearCardBg;
+  window.epUsernameInput  = epUsernameInput;
+  window.epUpdatePreview  = epUpdatePreview;
+  window.epPublicToggle   = epPublicToggle;
+  window.epContactToggle  = epContactToggle;
+
   window._fmResetProfilePrompt  = function () { _profilePromptFired = false; };
 }());
 </script>
