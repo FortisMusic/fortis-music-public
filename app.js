@@ -775,57 +775,42 @@ function fmRenderProfileCard(a, mode) {
   var streams   = a.streams || '—';
   var followers = a.followers || '—';
 
-  var avGrid = avu
-    ? '<div style="width:56px;height:56px;border-radius:50%;background:url(' + avu + ') center/cover no-repeat;border:1px solid rgba(255,255,255,0.08);margin:0 auto 12px;flex-shrink:0;"></div>'
-    : '<div style="width:56px;height:56px;border-radius:50%;background:rgba(200,180,255,0.09);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-family:\'Inter\',sans-serif;font-weight:700;font-size:1rem;margin:0 auto 12px;color:' + col + ';">' + initials + '</div>';
+  // Background layer — image if card_bg, otherwise dark purple gradient
+  var bgCss = cardBg
+    ? 'url(' + cardBg + ') center/cover no-repeat'
+    : 'linear-gradient(135deg,#1a0533 0%,#2d0a5e 50%,#0d0020 100%)';
 
-  var avList = avu
-    ? '<div style="width:40px;height:40px;border-radius:50%;background:url(' + avu + ') center/cover no-repeat;border:1px solid rgba(255,255,255,0.08);flex-shrink:0;"></div>'
-    : '<div style="width:40px;height:40px;border-radius:50%;background:rgba(200,180,255,0.07);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-family:\'Inter\',sans-serif;font-weight:700;font-size:0.82rem;flex-shrink:0;color:' + col + ';">' + initials + '</div>';
+  // Overlay — only when there is a photo background
+  var overlay = cardBg
+    ? '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.75) 0%,rgba(0,0,0,0.35) 40%,rgba(0,0,0,0.05) 100%);pointer-events:none;"></div>'
+    : '';
 
-  if (mode === 'compact') {
-    var visStyle  = cardBg ? 'background:url(' + cardBg + ') center/cover no-repeat;position:relative;' : 'background:linear-gradient(135deg,#1a0533,#3d0a6b);';
-    var overlay   = cardBg ? '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.75) 0%,rgba(0,0,0,0.35) 40%,rgba(0,0,0,0.05) 100%);border-radius:inherit;"></div>' : '';
-    var visContent = avu
-      ? '<div style="width:44px;height:44px;border-radius:50%;background:url(' + avu + ') center/cover no-repeat;border:2px solid rgba(255,255,255,0.25);position:relative;z-index:1;"></div>'
-      : '<div class="fm-artist-initial" style="position:relative;z-index:1;">' + (initials.charAt(0)||'?') + '</div>';
-    return '<div class="fm-artist-card" onclick="' + click + '">'
-      + '<div class="fm-artist-visual" style="' + visStyle + '">' + overlay + visContent + '</div>'
-      + '<div class="fm-artist-info">'
-      + '<div class="fm-artist-name">' + name + '</div>'
-      + '<div class="fm-artist-meta">' + type + (city ? ' · ' + city : '') + '</div>'
-      + '<div class="fm-artist-stats"><span>' + genre + '</span></div>'
-      + '</div></div>';
-  }
+  // Avatar — 60px circle with 2.5px white border
+  var avatar = avu
+    ? '<div style="width:60px;height:60px;border-radius:50%;background:url(' + avu + ') center/cover no-repeat;border:2.5px solid #fff;flex-shrink:0;"></div>'
+    : '<div style="width:60px;height:60px;border-radius:50%;background:' + col + ';border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;color:#fff;flex-shrink:0;">' + initials + '</div>';
 
-  if (mode === 'list') {
-    return '<div class="discover-card" style="display:flex;align-items:center;gap:14px;padding:14px 18px;" onclick="' + click + '">'
-      + avList
-      + '<div style="flex:1;"><div style="font-weight:600;font-size:0.88rem;margin-bottom:2px;">' + name + '</div><div style="font-size:0.72rem;color:rgba(200,180,255,0.55);">' + type + ' · ' + genre + ' · ' + city + '</div></div>'
-      + '<div style="font-size:0.72rem;color:#C8A97E;font-weight:500;min-width:64px;text-align:right;">' + streams + '<div style="color:rgba(255,255,255,0.2);font-size:0.64rem;">streams</div></div>'
-      + '<button onclick="event.stopPropagation();showFanDonateModal()" style="padding:5px 12px;background:transparent;border:1px solid rgba(123,47,255,0.28);color:rgba(200,180,255,0.62);border-radius:16px;font-size:0.72rem;cursor:pointer;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">Support</button>'
-      + '</div>';
-  }
+  // Genre badge — only render if genre text exists
+  var genreBadge = genre
+    ? '<div style="display:inline-block;background:rgba(123,47,255,0.35);color:#C8B4FF;padding:2px 8px;border-radius:6px;font-size:0.65rem;font-weight:600;letter-spacing:0.04em;margin-bottom:8px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + genre + '</div>'
+    : '';
 
-  // Default: grid
-  var bgStyle  = cardBg ? 'background:url(' + cardBg + ') center/cover no-repeat;position:relative;overflow:hidden;' : '';
-  var ov       = cardBg ? '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.75) 0%,rgba(0,0,0,0.35) 40%,rgba(0,0,0,0.05) 100%);pointer-events:none;z-index:0;"></div>' : '';
-  var zi       = cardBg ? 'position:relative;z-index:1;' : '';
-  return '<div class="discover-card" style="' + bgStyle + '" onclick="' + click + '">'
-    + ov
-    + '<div style="' + zi + 'padding:24px 20px 16px;text-align:center;border-bottom:1px solid rgba(200,180,255,0.07);">'
-    + avGrid
-    + '<div style="font-weight:700;font-size:0.9rem;margin-bottom:3px;letter-spacing:-0.01em;">' + name + '</div>'
-    + '<div style="font-size:0.72rem;color:rgba(200,180,255,0.58);">' + type + ' · ' + city + '</div>'
-    + '<div style="display:flex;gap:4px;justify-content:center;margin-top:10px;flex-wrap:wrap;">'
-    + '<span style="background:rgba(200,180,255,0.09);color:rgba(255,255,255,0.4);padding:2px 8px;border-radius:2px;font-size:0.66rem;letter-spacing:0.06em;text-transform:uppercase;">' + genre + '</span>'
-    + (a.verified ? '<span style="background:rgba(0,230,118,0.08);color:#00E676;padding:2px 8px;border-radius:2px;font-size:0.66rem;letter-spacing:0.06em;text-transform:uppercase;">Verified</span>' : '')
-    + '</div></div>'
-    + '<div style="' + zi + 'padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">'
-    + '<div><div style="font-size:0.82rem;font-weight:600;">' + followers + '</div><div style="font-size:0.66rem;color:rgba(200,180,255,0.52);letter-spacing:0.06em;text-transform:uppercase;">Followers</div></div>'
-    + '<div><div style="font-size:0.82rem;font-weight:600;color:#C8A97E;">' + streams + '</div><div style="font-size:0.66rem;color:rgba(200,180,255,0.52);letter-spacing:0.06em;text-transform:uppercase;">Streams</div></div>'
-    + '<button onclick="event.stopPropagation();showFanDonateModal()" style="padding:6px 12px;background:transparent;border:1px solid rgba(123,47,255,0.28);color:rgba(200,180,255,0.72);border-radius:16px;font-size:0.72rem;cursor:pointer;letter-spacing:0.04em;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">Support</button>'
-    + '</div></div>';
+  return '<div style="position:relative;width:220px;height:280px;border-radius:16px;overflow:hidden;cursor:pointer;flex-shrink:0;background:' + bgCss + ';" onclick="' + click + '">'
+    + overlay
+    // Support button — top right, glass style
+    + '<button onclick="event.stopPropagation();showFanDonateModal()" style="position:absolute;top:10px;right:10px;z-index:2;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;padding:4px 10px;border-radius:8px;font-size:0.68rem;font-weight:600;cursor:pointer;font-family:inherit;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">Support</button>'
+    // Bottom content block
+    + '<div style="position:absolute;bottom:0;left:0;right:0;padding:14px;z-index:1;">'
+    + avatar
+    + '<div style="font-size:16px;font-weight:600;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,0.6);margin-top:8px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + name + '</div>'
+    + '<div style="font-size:12px;color:rgba(255,255,255,0.75);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + type + (city ? ' · ' + city : '') + '</div>'
+    + genreBadge
+    + '<div style="display:flex;gap:14px;">'
+    + '<div><div style="font-size:13px;font-weight:700;color:#fff;line-height:1.2;">' + followers + '</div><div style="font-size:10px;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.06em;">Followers</div></div>'
+    + '<div><div style="font-size:13px;font-weight:700;color:#fff;line-height:1.2;">' + streams + '</div><div style="font-size:10px;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.06em;">Streams</div></div>'
+    + '</div>'
+    + '</div>'
+    + '</div>';
 }
 
 function loadHomeTrendingArtists() {
