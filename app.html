@@ -1075,82 +1075,7 @@
         <button class="fm-link-btn" onclick="showPage('discover')">View all artists →</button>
       </div>
 
-      <div class="fm-artists-scroll">
-        <div class="fm-artist-card" onclick="showPage('artist')">
-          <div class="fm-artist-visual" style="background:linear-gradient(135deg,#1a0533,#3d0a6b);">
-            <div class="fm-artist-initial">L</div>
-            <div class="fm-artist-badge">VERIFIED</div>
-          </div>
-          <div class="fm-artist-info">
-            <div class="fm-artist-name">Luna Rivera</div>
-            <div class="fm-artist-meta">Electronic · Dubai</div>
-            <div class="fm-artist-stats">
-              <span>12.3K fans</span>
-              <span style="color:#00E676;">●</span>
-              <span>4 protected</span>
-            </div>
-          </div>
-        </div>
-        <div class="fm-artist-card" onclick="showPage('artist')">
-          <div class="fm-artist-visual" style="background:linear-gradient(135deg,#0a1a33,#0a3d6b);">
-            <div class="fm-artist-initial">Z</div>
-            <div class="fm-artist-badge">VERIFIED</div>
-          </div>
-          <div class="fm-artist-info">
-            <div class="fm-artist-name">Zara Pulse</div>
-            <div class="fm-artist-meta">Synthwave · Belgrade</div>
-            <div class="fm-artist-stats">
-              <span>8.1K fans</span>
-              <span style="color:#00E676;">●</span>
-              <span>7 protected</span>
-            </div>
-          </div>
-        </div>
-        <div class="fm-artist-card" onclick="showPage('dj')">
-          <div class="fm-artist-visual" style="background:linear-gradient(135deg,#330a1a,#6b0a3d);">
-            <div class="fm-artist-initial">N</div>
-            <div class="fm-artist-badge" style="background:rgba(233,30,140,0.25);color:#E91E8C;border-color:rgba(233,30,140,0.3);">DJ</div>
-          </div>
-          <div class="fm-artist-info">
-            <div class="fm-artist-name">DJ Nexus</div>
-            <div class="fm-artist-meta">House / Techno · Dubai</div>
-            <div class="fm-artist-stats">
-              <span>28.7K fans</span>
-              <span style="color:#00E676;">●</span>
-              <span>Live sets</span>
-            </div>
-          </div>
-        </div>
-        <div class="fm-artist-card" onclick="showPage('discover')">
-          <div class="fm-artist-visual" style="background:linear-gradient(135deg,#1a330a,#3d6b0a);">
-            <div class="fm-artist-initial">M</div>
-          </div>
-          <div class="fm-artist-info">
-            <div class="fm-artist-name">Marcus Wave</div>
-            <div class="fm-artist-meta">Hip-Hop · Atlanta</div>
-            <div class="fm-artist-stats">
-              <span>19.2K fans</span>
-              <span style="color:#00E676;">●</span>
-              <span>12 protected</span>
-            </div>
-          </div>
-        </div>
-        <div class="fm-artist-card" onclick="showPage('discover')">
-          <div class="fm-artist-visual" style="background:linear-gradient(135deg,#33200a,#6b440a);">
-            <div class="fm-artist-initial">K</div>
-            <div class="fm-artist-badge" style="background:rgba(255,215,0,0.15);color:#FFD700;border-color:rgba(255,215,0,0.3);">NEW</div>
-          </div>
-          <div class="fm-artist-info">
-            <div class="fm-artist-name">Kira Tanaka</div>
-            <div class="fm-artist-meta">Classical · Tokyo</div>
-            <div class="fm-artist-stats">
-              <span>3.2K fans</span>
-              <span style="color:#00E676;">●</span>
-              <span>Rising</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <div id="fmHomeTrendingGrid" class="fm-artists-scroll"></div>
     </div>
   </section>
 
@@ -3830,6 +3755,15 @@
       <input type="file" id="fmCoverInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="fmPhotoPreview(this,'fmCoverPreview',null)">
     </div>
 
+    <!-- Card background image -->
+    <div class="fm-cover-section" style="margin-top:12px;">
+      <div id="fmCardBgPreview" class="fm-photo-cover" onclick="document.getElementById('fmCardBgInput').click()" style="height:80px;">
+        <span id="fmCardBgHint">+ Card Background</span>
+      </div>
+      <input type="file" id="fmCardBgInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="fmPhotoPreview(this,'fmCardBgPreview','fmCardBgHint')">
+      <span class="fm-photo-hint">Card background · JPG, PNG or WEBP · Max 800×400 · 300 KB</span>
+    </div>
+
     <!-- Display name (non-Fan roles) -->
     <div id="pfDisplayNameSection" style="display:none;" class="gate-row full"><div class="gate-field">
       <label id="pfDisplayNameLabel">Artist / Band Name</label>
@@ -4309,8 +4243,9 @@
     'Gear Store':      { dn:true,  dnL:'Store Name',          cover:true,  genres:false, dance:false, phone:true,  addr:false, hours:false, cap:false, gigs:false, sched:false, equip:false, price:false, avail:false, brands:true,  maps:false, web:true,  soc:['instagram','facebook'] }
   };
 
-  var _pfPhotoFile = null;
-  var _pfCoverFile = null;
+  var _pfPhotoFile  = null;
+  var _pfCoverFile  = null;
+  var _pfCardBgFile = null;
   var _pfGenresSel = [];
   var _pfDanceSel  = [];
   var _pfRole      = 'Fan';
@@ -4356,8 +4291,9 @@
     var pf    = window._fmProfile || {};
     var _umeta = (window._fmUser && window._fmUser.user_metadata) ? window._fmUser.user_metadata : {};
     _pfRole = pf.role || _umeta.role || 'Fan';
-    _pfPhotoFile = null;
-    _pfCoverFile = null;
+    _pfPhotoFile  = null;
+    _pfCoverFile  = null;
+    _pfCardBgFile = null;
 
     document.getElementById('fmProfileTitle').textContent      = isEdit ? 'Edit Profile' : 'Complete Your Profile';
     document.getElementById('pfLaterRow').style.display        = isEdit ? 'none' : '';
@@ -4487,6 +4423,16 @@
       var cs = cp.querySelector('span'); if (cs) cs.style.display = 'none';
     }
 
+    // Card background
+    var cbp = document.getElementById('fmCardBgPreview');
+    var cbh = document.getElementById('fmCardBgHint');
+    var cbUrl = pf.meta && pf.meta.card_bg ? pf.meta.card_bg : null;
+    if (cbUrl && cbp) {
+      cbp.style.backgroundImage = 'url(' + cbUrl + ')';
+      cbp.style.backgroundSize = 'cover'; cbp.style.backgroundPosition = 'center';
+      if (cbh) cbh.style.display = 'none';
+    }
+
     // Chips
     _pfGenresSel = (meta.genres || []).slice();
     _pfDanceSel  = (meta.dance_styles || []).slice();
@@ -4583,8 +4529,9 @@
       if (errEl) { errEl.textContent = 'Please upload a JPG, PNG or WEBP image.'; errEl.style.display = 'block'; }
       return;
     }
-    if (previewId === 'fmAvatarPreview') _pfPhotoFile = file;
-    else                                 _pfCoverFile = file;
+    if      (previewId === 'fmAvatarPreview') _pfPhotoFile  = file;
+    else if (previewId === 'fmCardBgPreview') _pfCardBgFile = file;
+    else                                      _pfCoverFile  = file;
     var reader = new FileReader();
     reader.onload = function (e) {
       var el = document.getElementById(previewId);
@@ -4647,8 +4594,9 @@
     metaKeys.forEach(function (k) { var v = gv(k[0]); if (v) meta[k[1]] = v; });
     if (_pfGenresSel.length) meta.genres      = _pfGenresSel;
     if (_pfDanceSel.length)  meta.dance_styles = _pfDanceSel;
-    var _existingVids = window._fmProfile && window._fmProfile.meta && window._fmProfile.meta.videos;
-    if (Array.isArray(_existingVids) && _existingVids.length) meta.videos = _existingVids;
+    var _existingMeta = (window._fmProfile && window._fmProfile.meta) || {};
+    if (Array.isArray(_existingMeta.videos) && _existingMeta.videos.length) meta.videos = _existingMeta.videos;
+    if (_existingMeta.card_bg && !_pfCardBgFile) meta.card_bg = _existingMeta.card_bg;
 
     var btn = document.getElementById('pfSaveBtn');
     btn.disabled = true; btn.textContent = 'Saving…';
@@ -4658,8 +4606,9 @@
     if (!sb || !user) { err.textContent = 'Not logged in.'; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Save Profile →'; return; }
 
     Promise.all([
-      _pfPhotoFile ? pfUpload(_pfPhotoFile, 'avatar') : Promise.resolve(null),
-      _pfCoverFile ? pfUpload(_pfCoverFile, 'cover')  : Promise.resolve(null)
+      _pfPhotoFile  ? pfUpload(_pfPhotoFile,  'avatar')   : Promise.resolve(null),
+      _pfCoverFile  ? pfUpload(_pfCoverFile,  'cover')    : Promise.resolve(null),
+      _pfCardBgFile ? pfUpload(_pfCardBgFile, 'card_bg')  : Promise.resolve(null)
     ]).then(function (urls) {
       var existingPf = window._fmProfile || {};
       var umeta      = (user.user_metadata) || {};
@@ -4679,6 +4628,7 @@
       };
       if (urls[0]) data.avatar_url = urls[0];
       if (urls[1]) data.cover_url  = urls[1];
+      if (urls[2]) data.meta.card_bg = urls[2];
       console.log('[FM] Upserting profile:', JSON.stringify(data));
       return sb.from('profiles').upsert(data, { onConflict: 'id' });
     }).then(function (r) {
@@ -4755,9 +4705,10 @@
     var sb = window._sb; var user = window._fmUser;
     if (!sb || !user) return Promise.resolve(null);
     var isAvatar = (type === 'avatar');
-    var maxW     = isAvatar ? 400  : 1200;
-    var maxH     = isAvatar ? 400  : 400;
-    var maxBytes = isAvatar ? 200 * 1024 : 500 * 1024;
+    var isCardBg = (type === 'card_bg');
+    var maxW     = isAvatar ? 400  : (isCardBg ? 800  : 1200);
+    var maxH     = isAvatar ? 400  : (isCardBg ? 400  : 400);
+    var maxBytes = isAvatar ? 200 * 1024 : (isCardBg ? 300 * 1024 : 500 * 1024);
     var path     = user.id + '/' + type + '.jpg';
     return compressImage(file, maxW, maxH, maxBytes).then(function(compressed) {
       console.log('[FM] Uploading', type, '—', (compressed.size / 1024).toFixed(1) + 'KB');
@@ -4779,6 +4730,10 @@
 
   // ── Public profile render ─────────────────────────────────────────────────
   function fmShowPublicProfile(userId) {
+    if (window._fmUser && window._fmUser.id === userId) {
+      if (typeof showPage === 'function') showPage('artist');
+      return;
+    }
     var sb = window._sb; if (!sb) return;
     var inner = document.getElementById('pubProfileInner');
     if (inner) inner.innerHTML = '<div style="color:var(--muted);padding:60px 0;text-align:center;">Loading…</div>';
@@ -4812,6 +4767,21 @@
     if (p.city||p.country) h += '<div class="fm-pub-location"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ' + [p.city,p.country].filter(Boolean).join(', ') + '</div>';
     h += '</div></div>';
 
+    // Action buttons — own profile gets Edit, others get Follow/Donate/Message
+    var _isOwn   = !!(window._fmUser && window._fmUser.id === p.id);
+    var _btnBase = 'padding:9px 18px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:0.03em;';
+    h += '<div style="display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 18px;">';
+    if (_isOwn) {
+      h += '<button class="gate-submit" style="max-width:200px;" onclick="fmProfileOpen(true)">&#x270F; Edit Profile</button>';
+    } else {
+      h += '<button id="pubFollowBtn" style="' + _btnBase + 'background:rgba(233,30,140,0.1);border:1px solid rgba(233,30,140,0.35);color:#E91E8C;" onclick="fmFollowProfile(\'' + p.id + '\')">&#x2764; Follow</button>';
+      h += '<button style="' + _btnBase + 'background:rgba(200,166,0,0.1);border:1px solid rgba(200,166,0,0.3);color:#C8A97E;" onclick="showFanDonateModal()">&#x1F4B0; Donate</button>';
+      if (p.fortis_contact !== false) {
+        h += '<button style="' + _btnBase + 'background:rgba(123,47,255,0.1);border:1px solid rgba(123,47,255,0.35);color:#A06EFF;" data-rid="' + p.id + '" data-rname="' + (p.display_name || p.full_name || 'Artist').replace(/"/g,'&quot;') + '" onclick="fmOpenChatPanel(this.dataset.rid,this.dataset.rname)">&#x1F4AC; Message</button>';
+      }
+    }
+    h += '</div>';
+
     if (p.bio) h += '<div class="fm-pub-bio">' + p.bio.replace(/\n/g,'<br>') + '</div>';
 
     if (meta.genres && meta.genres.length) {
@@ -4834,14 +4804,16 @@
     if (meta.equipment)   h += '<div class="fm-pub-section-label">Equipment</div><div class="fm-pub-text-block">' + meta.equipment.replace(/\n/g,'<br>') + '</div>';
     if (meta.availability)h += '<div class="fm-pub-section-label">Availability</div><div class="fm-pub-text-block">' + meta.availability.replace(/\n/g,'<br>') + '</div>';
 
-    // Contact
-    h += '<div class="fm-pub-section-label">Contact</div><div class="fm-pub-contact">';
-    if (p.fortis_contact !== false) h += '<button class="gate-submit fm-pub-contact-btn" onclick="alert(\'Fortis contact form — coming soon.\')">&#x1F4AC; Send Message via Fortis</button>';
-    if (meta.public_email) h += '<a class="fm-pub-contact-link" href="mailto:' + meta.public_email + '">&#x2709; ' + meta.public_email + '</a>';
-    if (meta.phone)  h += '<a class="fm-pub-contact-link" href="tel:' + meta.phone + '">&#128222; ' + meta.phone + '</a>';
-    if (meta.website)h += '<a class="fm-pub-contact-link" href="' + meta.website + '" target="_blank" rel="noopener">&#127760; ' + meta.website + '</a>';
-    if (meta.maps_link) h += '<a class="fm-pub-contact-link" href="' + meta.maps_link + '" target="_blank" rel="noopener">&#128205; Google Maps</a>';
-    h += '</div>';
+    // Contact details (no "coming soon" buttons — action buttons are above)
+    var _hasContact = meta.public_email || meta.phone || meta.website || meta.maps_link;
+    if (_hasContact) {
+      h += '<div class="fm-pub-section-label">Contact</div><div class="fm-pub-contact">';
+      if (meta.public_email) h += '<a class="fm-pub-contact-link" href="mailto:' + meta.public_email + '">&#x2709; ' + meta.public_email + '</a>';
+      if (meta.phone)        h += '<a class="fm-pub-contact-link" href="tel:' + meta.phone + '">&#128222; ' + meta.phone + '</a>';
+      if (meta.website)      h += '<a class="fm-pub-contact-link" href="' + meta.website + '" target="_blank" rel="noopener">&#127760; ' + meta.website + '</a>';
+      if (meta.maps_link)    h += '<a class="fm-pub-contact-link" href="' + meta.maps_link + '" target="_blank" rel="noopener">&#128205; Google Maps</a>';
+      h += '</div>';
+    }
 
     var socPairs = [['instagram','IG',meta.instagram],['youtube','YT',meta.youtube],['spotify','SP',meta.spotify],['soundcloud','SC',meta.soundcloud],['mixcloud','MC',meta.mixcloud],['facebook','FB',meta.facebook]].filter(function(s){return s[2];});
     if (socPairs.length) {
@@ -4849,6 +4821,17 @@
       socPairs.forEach(function(s){h+='<a class="fm-pub-social-btn" href="'+s[2]+'" target="_blank" rel="noopener">'+s[1]+'</a>';});
       h += '</div>';
     }
+    // Videos
+    var _vids = Array.isArray(meta.videos) ? meta.videos : [];
+    if (_vids.length) {
+      h += '<div class="fm-pub-section-label">Videos</div>';
+      h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:16px;">';
+      _vids.forEach(function(vid) {
+        h += '<div style="background:#1a1428;border:1px solid rgba(200,180,255,0.13);border-radius:14px;overflow:hidden;"><div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" src="https://www.youtube.com/embed/' + vid + '?rel=0&modestbranding=1" allowfullscreen loading="lazy"></iframe></div></div>';
+      });
+      h += '</div>';
+    }
+
     var pubPath = slug + '/' + (p.username || p.id.substring(0,8));
     h += '<div class="fm-pub-url">fortismusic.co/' + pubPath + '</div>';
     inner.innerHTML = h;
@@ -4985,9 +4968,10 @@
     if (!city || !country) { errEl.textContent = 'City and Country are required.'; errEl.style.display = 'block'; return; }
 
     btn.disabled = true; btn.textContent = 'Saving…';
-    var existingPf = window._fmProfile || {};
-    var newMeta    = Object.assign({}, existingPf.meta || {});
+    var existingPf  = window._fmProfile || {};
+    var newMeta     = Object.assign({}, existingPf.meta || {});
     if (pubEmail) newMeta.public_email = pubEmail; else delete newMeta.public_email;
+    // always preserve card_bg — it's not editable from this panel
 
     var data = {
       id: user.id, email: user.email,
@@ -5197,6 +5181,38 @@
       });
   }
 
+  // ── Follow a profile ─────────────────────────────────────────────────────
+  // SQL migration — run once in Supabase SQL Editor:
+  // CREATE TABLE IF NOT EXISTS follows (
+  //   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  //   follower_id  uuid REFERENCES auth.users(id) ON DELETE CASCADE,
+  //   following_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,
+  //   created_at   timestamptz DEFAULT now(),
+  //   UNIQUE(follower_id, following_id)
+  // );
+  // ALTER TABLE follows ENABLE ROW LEVEL SECURITY;
+  // CREATE POLICY "follow own"    ON follows FOR INSERT WITH CHECK (auth.uid() = follower_id);
+  // CREATE POLICY "read follows"  ON follows FOR SELECT USING (true);
+  // CREATE POLICY "unfollow own"  ON follows FOR DELETE USING (auth.uid() = follower_id);
+  function fmFollowProfile(profileId) {
+    var sb   = window._sb;
+    var user = window._fmUser;
+    if (!sb) return;
+    if (!user) { if (typeof window.fmAuthShow === 'function') window.fmAuthShow('login'); return; }
+    if (user.id === profileId) { if (typeof showToast === 'function') showToast('You cannot follow yourself'); return; }
+    sb.from('follows').insert({ follower_id: user.id, following_id: profileId })
+      .then(function(r) {
+        if (r && r.error) {
+          if (r.error.code === '23505') { if (typeof showToast === 'function') showToast('Already following'); return; }
+          console.warn('[FM] Follow error:', r.error.message);
+          return;
+        }
+        if (typeof showToast === 'function') showToast('Followed!');
+        var btn = document.getElementById('pubFollowBtn');
+        if (btn) { btn.textContent = '❤ Following'; btn.disabled = true; }
+      });
+  }
+
   // ── Override fmGoProfile from auth module ─────────────────────────────────
   window.fmGoProfile = function () {
     if (typeof window.fmAvatarClose === 'function') window.fmAvatarClose();
@@ -5232,6 +5248,7 @@
   window.fmCloseChatPanel       = fmCloseChatPanel;
   window.fmSendMessage          = fmSendMessage;
   window.fmLoadUnreadCount      = fmLoadUnreadCount;
+  window.fmFollowProfile        = fmFollowProfile;
   window._fmResetProfilePrompt  = function () { _profilePromptFired = false; };
 }());
 </script>
