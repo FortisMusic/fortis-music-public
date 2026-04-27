@@ -160,6 +160,7 @@ function showPage(id) {
     }
   });
   window.scrollTo(0, 0);
+  if (id === 'home')     loadHomeTrendingArtists();
   if (id === 'discover') loadDiscoverProfiles(filterArtists);
   if (id === 'artist') { if (typeof window.fmPopulateArtistPage === 'function') window.fmPopulateArtistPage(window._fmProfile); }
   if (id === 'gear') setTimeout(function(){ renderGearCards(); }, 50);
@@ -691,7 +692,8 @@ function loadDiscoverProfiles(cb) {
               emoji:      '🎵',
               username:   p.username,
               isLive:     true,
-              avatar_url: p.avatar_url
+              avatar_url: p.avatar_url,
+              meta:       p.meta || {}
             };
           });
       }
@@ -707,40 +709,10 @@ function renderDiscoverCards(data) {
   if (countEl) countEl.textContent = data.length;
   if (currentDiscoverView === 'grid') {
     grid.style.display = 'grid'; list.style.display = 'none';
-    grid.innerHTML = data.map(function(a) {
-      const initials = a.name.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();
-      const colors = ['#7B2FFF','#C8A97E','#00E676','#E91E8C','#3B82F6'];
-      const col = colors[Math.abs(a.name.charCodeAt(0) + a.name.charCodeAt(1)) % colors.length];
-      const cardClick = a.isLive && a.id ? 'if(window.fmShowPublicProfile)window.fmShowPublicProfile("'+a.id+'")' : 'showPage(\'artist\')';
-      return '<div class="discover-card" onclick="'+cardClick+'">'
-        + '<div style="padding:24px 20px 16px;text-align:center;border-bottom:1px solid rgba(200,180,255,0.07);">'
-        + '<div style="width:56px;height:56px;border-radius:50%;background:rgba(200,180,255,0.09);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-family:\'Inter\',sans-serif;font-weight:700;font-size:1rem;margin:0 auto 12px;color:'+col+';">'+initials+'</div>'
-        + '<div style="font-weight:700;font-size:0.9rem;margin-bottom:3px;letter-spacing:-0.01em;">'+a.name+'</div>'
-        + '<div style="font-size:0.72rem;color:rgba(200,180,255,0.58);">'+a.type+' · '+a.city+'</div>'
-        + '<div style="display:flex;gap:4px;justify-content:center;margin-top:10px;flex-wrap:wrap;">'
-        + '<span style="background:rgba(200,180,255,0.09);color:rgba(255,255,255,0.4);padding:2px 8px;border-radius:2px;font-size:0.66rem;letter-spacing:0.06em;text-transform:uppercase;">'+a.genre+'</span>'
-        + (a.verified ? '<span style="background:rgba(0,230,118,0.08);color:#00E676;padding:2px 8px;border-radius:2px;font-size:0.66rem;letter-spacing:0.06em;text-transform:uppercase;">Verified</span>' : '')
-        + '</div></div>'
-        + '<div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">'
-        + '<div><div style="font-size:0.82rem;font-weight:600;">'+a.followers+'</div><div style="font-size:0.66rem;color:rgba(200,180,255,0.52);letter-spacing:0.06em;text-transform:uppercase;">Followers</div></div>'
-        + '<div><div style="font-size:0.82rem;font-weight:600;color:#C8A97E;">'+a.streams+'</div><div style="font-size:0.66rem;color:rgba(200,180,255,0.52);letter-spacing:0.06em;text-transform:uppercase;">Streams</div></div>'
-        + '<button onclick="event.stopPropagation();showFanDonateModal()" style="padding:6px 12px;background:transparent;border:1px solid rgba(123,47,255,0.28);color:rgba(200,180,255,0.72);border-radius:16px;font-size:0.72rem;cursor:pointer;letter-spacing:0.04em;;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">Support</button>'
-        + '</div></div>';
-    }).join('');
+    grid.innerHTML = data.map(function(a) { return fmRenderProfileCard(a, 'grid'); }).join('');
   } else {
     grid.style.display = 'none'; list.style.display = 'flex';
-    list.innerHTML = data.map(function(a) {
-      const initials = a.name.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();
-      const colors = ['#7B2FFF','#C8A97E','#00E676','#E91E8C','#3B82F6'];
-      const col = colors[Math.abs(a.name.charCodeAt(0) + a.name.charCodeAt(1)) % colors.length];
-      const cardClick = a.isLive && a.id ? 'if(window.fmShowPublicProfile)window.fmShowPublicProfile("'+a.id+'")' : 'showPage(\'artist\')';
-      return '<div class="discover-card" style="display:flex;align-items:center;gap:14px;padding:14px 18px;" onclick="'+cardClick+'">'
-        + '<div style="width:40px;height:40px;border-radius:50%;background:rgba(200,180,255,0.07);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-family:\'Inter\',sans-serif;font-weight:700;font-size:0.82rem;flex-shrink:0;color:'+col+';">'+initials+'</div>'
-        + '<div style="flex:1;"><div style="font-weight:600;font-size:0.88rem;margin-bottom:2px;">'+a.name+'</div><div style="font-size:0.72rem;color:rgba(200,180,255,0.55);">'+a.type+' · '+a.genre+' · '+a.city+'</div></div>'
-        + '<div style="font-size:0.72rem;color:#C8A97E;font-weight:500;min-width:64px;text-align:right;">'+a.streams+'<div style="color:rgba(255,255,255,0.2);font-size:0.64rem;">streams</div></div>'
-        + '<button onclick="event.stopPropagation();showFanDonateModal()" style="padding:5px 12px;background:transparent;border:1px solid rgba(123,47,255,0.28);color:rgba(200,180,255,0.62);border-radius:16px;font-size:0.72rem;cursor:pointer;;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">Support</button>'
-        + '</div>';
-    }).join('');
+    list.innerHTML = data.map(function(a) { return fmRenderProfileCard(a, 'list'); }).join('');
   }
 }
 
@@ -760,7 +732,7 @@ function filterArtists() {
     if (verified === 'protected' && !a.protected) return false;
     return true;
   });
-  renderDiscoverCards(results);
+  renderDiscoverCards(fmShuffle(results));
 }
 
 function clearDiscoverFilters() {
@@ -768,6 +740,126 @@ function clearDiscoverFilters() {
     const el = document.getElementById(id); if(el) el.value='';
   });
   filterArtists();
+}
+
+function fmShuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function fmCardClick(id) {
+  if (!id) return;
+  if (window._fmUser && window._fmUser.id === id) {
+    showPage('artist');
+  } else if (window.fmShowPublicProfile) {
+    window.fmShowPublicProfile(id);
+  }
+}
+
+function fmRenderProfileCard(a, mode) {
+  var name      = a.name || 'Artist';
+  var initials  = name.split(' ').map(function(w){return w[0]||'';}).join('').slice(0,2).toUpperCase() || '?';
+  var colors    = ['#7B2FFF','#C8A97E','#00E676','#E91E8C','#3B82F6'];
+  var col       = colors[Math.abs((name.charCodeAt(0)||0) + (name.charCodeAt(1)||0)) % colors.length];
+  var cardBg    = a.meta && a.meta.card_bg ? a.meta.card_bg : null;
+  var avu       = a.avatar_url || null;
+  var id        = a.id || '';
+  var click     = id ? 'fmCardClick(\'' + id + '\')' : 'void 0';
+  var type      = a.type  || '';
+  var city      = a.city  || '';
+  var genre     = a.genre || '';
+  var streams   = a.streams || '—';
+  var followers = a.followers || '—';
+
+  var avGrid = avu
+    ? '<div style="width:56px;height:56px;border-radius:50%;background:url(' + avu + ') center/cover no-repeat;border:1px solid rgba(255,255,255,0.08);margin:0 auto 12px;flex-shrink:0;"></div>'
+    : '<div style="width:56px;height:56px;border-radius:50%;background:rgba(200,180,255,0.09);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-family:\'Inter\',sans-serif;font-weight:700;font-size:1rem;margin:0 auto 12px;color:' + col + ';">' + initials + '</div>';
+
+  var avList = avu
+    ? '<div style="width:40px;height:40px;border-radius:50%;background:url(' + avu + ') center/cover no-repeat;border:1px solid rgba(255,255,255,0.08);flex-shrink:0;"></div>'
+    : '<div style="width:40px;height:40px;border-radius:50%;background:rgba(200,180,255,0.07);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-family:\'Inter\',sans-serif;font-weight:700;font-size:0.82rem;flex-shrink:0;color:' + col + ';">' + initials + '</div>';
+
+  if (mode === 'compact') {
+    var visStyle  = cardBg ? 'background:url(' + cardBg + ') center/cover no-repeat;position:relative;' : 'background:linear-gradient(135deg,#1a0533,#3d0a6b);';
+    var overlay   = cardBg ? '<div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,5,26,0.4),rgba(10,5,26,0.78));border-radius:inherit;"></div>' : '';
+    var visContent = avu
+      ? '<div style="width:44px;height:44px;border-radius:50%;background:url(' + avu + ') center/cover no-repeat;border:2px solid rgba(255,255,255,0.25);position:relative;z-index:1;"></div>'
+      : '<div class="fm-artist-initial" style="position:relative;z-index:1;">' + (initials.charAt(0)||'?') + '</div>';
+    return '<div class="fm-artist-card" onclick="' + click + '">'
+      + '<div class="fm-artist-visual" style="' + visStyle + '">' + overlay + visContent + '</div>'
+      + '<div class="fm-artist-info">'
+      + '<div class="fm-artist-name">' + name + '</div>'
+      + '<div class="fm-artist-meta">' + type + (city ? ' · ' + city : '') + '</div>'
+      + '<div class="fm-artist-stats"><span>' + genre + '</span></div>'
+      + '</div></div>';
+  }
+
+  if (mode === 'list') {
+    return '<div class="discover-card" style="display:flex;align-items:center;gap:14px;padding:14px 18px;" onclick="' + click + '">'
+      + avList
+      + '<div style="flex:1;"><div style="font-weight:600;font-size:0.88rem;margin-bottom:2px;">' + name + '</div><div style="font-size:0.72rem;color:rgba(200,180,255,0.55);">' + type + ' · ' + genre + ' · ' + city + '</div></div>'
+      + '<div style="font-size:0.72rem;color:#C8A97E;font-weight:500;min-width:64px;text-align:right;">' + streams + '<div style="color:rgba(255,255,255,0.2);font-size:0.64rem;">streams</div></div>'
+      + '<button onclick="event.stopPropagation();showFanDonateModal()" style="padding:5px 12px;background:transparent;border:1px solid rgba(123,47,255,0.28);color:rgba(200,180,255,0.62);border-radius:16px;font-size:0.72rem;cursor:pointer;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">Support</button>'
+      + '</div>';
+  }
+
+  // Default: grid
+  var bgStyle  = cardBg ? 'background:url(' + cardBg + ') center/cover no-repeat;position:relative;overflow:hidden;' : '';
+  var ov       = cardBg ? '<div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,5,26,0.55),rgba(10,5,26,0.88));pointer-events:none;z-index:0;"></div>' : '';
+  var zi       = cardBg ? 'position:relative;z-index:1;' : '';
+  return '<div class="discover-card" style="' + bgStyle + '" onclick="' + click + '">'
+    + ov
+    + '<div style="' + zi + 'padding:24px 20px 16px;text-align:center;border-bottom:1px solid rgba(200,180,255,0.07);">'
+    + avGrid
+    + '<div style="font-weight:700;font-size:0.9rem;margin-bottom:3px;letter-spacing:-0.01em;">' + name + '</div>'
+    + '<div style="font-size:0.72rem;color:rgba(200,180,255,0.58);">' + type + ' · ' + city + '</div>'
+    + '<div style="display:flex;gap:4px;justify-content:center;margin-top:10px;flex-wrap:wrap;">'
+    + '<span style="background:rgba(200,180,255,0.09);color:rgba(255,255,255,0.4);padding:2px 8px;border-radius:2px;font-size:0.66rem;letter-spacing:0.06em;text-transform:uppercase;">' + genre + '</span>'
+    + (a.verified ? '<span style="background:rgba(0,230,118,0.08);color:#00E676;padding:2px 8px;border-radius:2px;font-size:0.66rem;letter-spacing:0.06em;text-transform:uppercase;">Verified</span>' : '')
+    + '</div></div>'
+    + '<div style="' + zi + 'padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">'
+    + '<div><div style="font-size:0.82rem;font-weight:600;">' + followers + '</div><div style="font-size:0.66rem;color:rgba(200,180,255,0.52);letter-spacing:0.06em;text-transform:uppercase;">Followers</div></div>'
+    + '<div><div style="font-size:0.82rem;font-weight:600;color:#C8A97E;">' + streams + '</div><div style="font-size:0.66rem;color:rgba(200,180,255,0.52);letter-spacing:0.06em;text-transform:uppercase;">Streams</div></div>'
+    + '<button onclick="event.stopPropagation();showFanDonateModal()" style="padding:6px 12px;background:transparent;border:1px solid rgba(123,47,255,0.28);color:rgba(200,180,255,0.72);border-radius:16px;font-size:0.72rem;cursor:pointer;letter-spacing:0.04em;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">Support</button>'
+    + '</div></div>';
+}
+
+function loadHomeTrendingArtists() {
+  var sb   = window._sb;
+  var grid = document.getElementById('fmHomeTrendingGrid');
+  if (!sb || !grid) return;
+  sb.from('profiles')
+    .select('id,full_name,display_name,role,country,city,meta,avatar_url')
+    .neq('role', 'Fan')
+    .limit(20)
+    .then(function(r) {
+      if (!r.data || !r.data.length) return;
+      var profiles = r.data
+        .filter(function(p) { return !!(p.full_name || p.display_name); })
+        .map(function(p) {
+          return {
+            id:        p.id,
+            name:      p.display_name || p.full_name,
+            type:      p.role || 'Artist',
+            genre:     (p.meta && p.meta.genres && p.meta.genres.length) ? p.meta.genres[0] : '',
+            city:      p.city || '',
+            country:   p.country || '',
+            followers: '—',
+            streams:   '—',
+            verified:  false,
+            isLive:    true,
+            avatar_url:p.avatar_url,
+            meta:      p.meta || {}
+          };
+        });
+      grid.innerHTML = fmShuffle(profiles).slice(0, 5).map(function(a) {
+        return fmRenderProfileCard(a, 'compact');
+      }).join('');
+    }).catch(function(){});
 }
 
 function setDiscoverView(v) {
@@ -1314,6 +1406,7 @@ document.addEventListener('DOMContentLoaded', function() {
   renderEventCards(EVENTS_DB.filter(function(e){ return !e.featured; }));
   renderEventFeatured(EVENTS_DB);
   initHomePage();
+  loadHomeTrendingArtists();
 
   // Restore last visited page
   var _lastPage = localStorage.getItem('fm_last_page');
