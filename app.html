@@ -5644,7 +5644,7 @@
     if (!img || !container || !img.naturalWidth) return;
     var cw = 220, ch = 280;
     var iw = img.naturalWidth, ih = img.naturalHeight;
-    var scale  = Math.max(cw / iw, ch / ih) * 1.5;
+    var scale  = Math.max(cw / iw, ch / ih);
     var dispW  = Math.round(iw * scale);
     var dispH  = Math.round(ih * scale);
     img.style.width  = dispW + 'px';
