@@ -785,7 +785,7 @@ function fmRenderProfileCard(a, mode) {
 
   if (mode === 'compact') {
     var visStyle  = cardBg ? 'background:url(' + cardBg + ') center/cover no-repeat;position:relative;' : 'background:linear-gradient(135deg,#1a0533,#3d0a6b);';
-    var overlay   = cardBg ? '<div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,5,26,0.4),rgba(10,5,26,0.78));border-radius:inherit;"></div>' : '';
+    var overlay   = cardBg ? '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.75) 0%,rgba(0,0,0,0.35) 40%,rgba(0,0,0,0.05) 100%);border-radius:inherit;"></div>' : '';
     var visContent = avu
       ? '<div style="width:44px;height:44px;border-radius:50%;background:url(' + avu + ') center/cover no-repeat;border:2px solid rgba(255,255,255,0.25);position:relative;z-index:1;"></div>'
       : '<div class="fm-artist-initial" style="position:relative;z-index:1;">' + (initials.charAt(0)||'?') + '</div>';
@@ -809,7 +809,7 @@ function fmRenderProfileCard(a, mode) {
 
   // Default: grid
   var bgStyle  = cardBg ? 'background:url(' + cardBg + ') center/cover no-repeat;position:relative;overflow:hidden;' : '';
-  var ov       = cardBg ? '<div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,5,26,0.55),rgba(10,5,26,0.88));pointer-events:none;z-index:0;"></div>' : '';
+  var ov       = cardBg ? '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.75) 0%,rgba(0,0,0,0.35) 40%,rgba(0,0,0,0.05) 100%);pointer-events:none;z-index:0;"></div>' : '';
   var zi       = cardBg ? 'position:relative;z-index:1;' : '';
   return '<div class="discover-card" style="' + bgStyle + '" onclick="' + click + '">'
     + ov
