@@ -3052,8 +3052,6 @@
       <div style="flex:1;min-width:200px;">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px;">
           <h2 id="artistPageName" style="font-family:'Inter',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:-0.02em;">Luna Rivera</h2>
-          <span style="background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);color:#00E676;padding:2px 10px;border-radius:2px;font-size:0.66rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">Verified</span>
-          <span style="background:rgba(155,111,255,0.08);border:1px solid rgba(155,111,255,0.2);color:#9B6FFF;padding:2px 10px;border-radius:2px;font-size:0.66rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">Protected</span>
         </div>
         <div id="artistPageMeta" style="color:rgba(200,180,255,0.55);font-size:0.8rem;font-weight:300;">Electronic · Dubai, UAE · Member since Dec 2025</div>
         <div style="display:flex;gap:20px;margin-top:10px;flex-wrap:wrap;">
@@ -3067,7 +3065,6 @@
       <div style="display:flex;flex-direction:column;gap:8px;">
         <button onclick="showPage('upload')" style="padding:10px 20px;background:#f0f0f5;border:none;color:#0d0818;border-radius:16px;font-size:0.82rem;font-weight:700;cursor:pointer;letter-spacing:0.02em;">Protect New Track</button>
         <button onclick="showPage('edit-profile')" style="padding:10px 20px;background:transparent;border:1px solid rgba(200,169,126,0.35);color:#C8A97E;border-radius:16px;font-size:0.82rem;cursor:pointer;">Edit Profile</button>
-        <button onclick="showPage('fan')" style="padding:10px 20px;background:transparent;border:1px solid rgba(123,47,255,0.28);color:rgba(200,180,255,0.62);border-radius:16px;font-size:0.82rem;cursor:pointer;;box-shadow:0 0 0 1px rgba(123,47,255,0.18),0 4px 24px rgba(80,20,180,0.22),0 1px 0 rgba(200,160,255,0.12) inset">Fan View</button>
       </div>
     </div>
 
@@ -5074,20 +5071,22 @@
     var socialRow = document.getElementById('artistSocialRow');
     if (socialRow) {
       var SOCIALS = [
-        { key: 'instagram',  label: 'IG', color: '#E1306C', bg: 'rgba(225,48,108,0.12)', bd: 'rgba(225,48,108,0.35)' },
-        { key: 'youtube',    label: 'YT', color: '#FF4444', bg: 'rgba(255,68,68,0.1)',   bd: 'rgba(255,68,68,0.3)'   },
-        { key: 'spotify',    label: 'SP', color: '#1DB954', bg: 'rgba(29,185,84,0.1)',   bd: 'rgba(29,185,84,0.3)'   },
-        { key: 'soundcloud', label: 'SC', color: '#FF5500', bg: 'rgba(255,85,0,0.1)',    bd: 'rgba(255,85,0,0.3)'    },
-        { key: 'mixcloud',   label: 'MC', color: '#8B3DFF', bg: 'rgba(139,61,255,0.1)',  bd: 'rgba(139,61,255,0.3)'  },
-        { key: 'facebook',   label: 'FB', color: '#1877F2', bg: 'rgba(24,119,242,0.1)',  bd: 'rgba(24,119,242,0.3)'  }
+        { key: 'instagram',  color: '#E1306C', svg: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none"/></svg>' },
+        { key: 'youtube',    color: '#FF0000', svg: '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M22.5 6.5A3 3 0 0 0 20.4 4.4C18.9 4 12 4 12 4S5.1 4 3.6 4.4A3 3 0 0 0 1.5 6.5 31 31 0 0 0 1 12a31 31 0 0 0 .5 5.5A3 3 0 0 0 3.6 19.6C5.1 20 12 20 12 20s6.9 0 8.4-.4a3 3 0 0 0 2.1-2.1A31 31 0 0 0 23 12a31 31 0 0 0-.5-5.5zM10 15V9l5.5 3Z"/></svg>' },
+        { key: 'spotify',    color: '#1DB954', svg: '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.476 2 2 6.477 2 12c0 5.523 4.476 10 10 10 5.523 0 10-4.477 10-10 0-5.524-4.477-10-10-10zm4.586 14.424a.622.622 0 0 1-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 0 1-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 0 1 .207.857zm1.223-2.701a.783.783 0 0 1-1.076.258c-2.687-1.652-6.785-2.131-9.965-1.166a.783.783 0 0 1-.46-1.49c3.631-1.102 8.147-.569 11.269 1.317a.783.783 0 0 1 .258 1.078zm.104-2.812c-3.226-1.914-8.543-2.09-11.623-1.156a.94.94 0 0 1-.541-1.8c3.532-1.068 9.404-.862 13.115 1.338a.937.937 0 1 1-.951 1.618z"/></svg>' },
+        { key: 'soundcloud', color: '#FF5500', svg: '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M2 14.5C2 15.88 3.12 17 4.5 17S7 15.88 7 14.5V13c0-1.38-1.12-2.5-2.5-2.5S2 11.62 2 13v1.5zm5.5 1.75a.75.75 0 0 0 1.5 0V11a.75.75 0 0 0-1.5 0v5.25zm2.5 0a.75.75 0 0 0 1.5 0V9a.75.75 0 0 0-1.5 0v7.25zm2.5.25a.75.75 0 0 0 1.5 0V8.9a5.5 5.5 0 0 0-1.5.1V16.5zm3.25.5H17A4 4 0 0 0 21 13a4 4 0 0 0-4-4h-.4a6.5 6.5 0 0 0-1.6-2V17z"/></svg>' },
+        { key: 'mixcloud',   color: '#52AAD8', svg: '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg>' },
+        { key: 'facebook',   color: '#1877F2', svg: '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>' },
+        { key: 'website',    color: '#6B46C1', svg: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' }
       ];
-      var _bs = 'display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;font-size:0.62rem;font-weight:800;text-decoration:none;letter-spacing:0.02em;';
+      var _bs = 'display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;text-decoration:none;';
       var h = '';
       SOCIALS.forEach(function(s) {
-        if (meta[s.key]) h += '<a href="' + meta[s.key] + '" target="_blank" rel="noopener" style="' + _bs + 'background:' + s.bg + ';border:1px solid ' + s.bd + ';color:' + s.color + ';">' + s.label + '</a>';
+        var url = meta[s.key];
+        if (url) h += '<a href="' + url + '" target="_blank" rel="noopener" style="' + _bs + 'background:' + s.color + ';" title="' + s.key.charAt(0).toUpperCase() + s.key.slice(1) + '">' + s.svg + '</a>';
       });
       if (pf.fortis_contact !== false) {
-        h += '<button data-rid="' + pf.id + '" data-rname="' + name.replace(/"/g, '&quot;') + '" onclick="fmOpenChatPanel(this.dataset.rid,this.dataset.rname)" style="' + _bs + 'background:rgba(123,47,255,0.12);border:1px solid rgba(123,47,255,0.35);color:#A06EFF;cursor:pointer;font-size:0.88rem;padding:0;font-family:inherit;" title="Send Message">&#x1F4AC;</button>';
+        h += '<button data-rid="' + pf.id + '" data-rname="' + name.replace(/"/g, '&quot;') + '" onclick="fmOpenChatPanel(this.dataset.rid,this.dataset.rname)" style="' + _bs + 'background:#8B5CF6;cursor:pointer;padding:0;border:none;" title="Send Message"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>';
       }
       socialRow.innerHTML = h;
     }
@@ -5881,6 +5880,8 @@
         if (typeof window.fmPopulateArtistPage === 'function') window.fmPopulateArtistPage(r2.data);
       }
       if (typeof showToast === 'function') showToast('Profile saved!');
+      if (typeof loadDiscoverProfiles      === 'function') loadDiscoverProfiles();
+      if (typeof loadHomeTrendingArtists   === 'function') loadHomeTrendingArtists();
       if (typeof showPage  === 'function') showPage('artist');
     }).catch(function(ex) {
       setBtnState(false);
