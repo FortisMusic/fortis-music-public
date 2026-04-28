@@ -1318,6 +1318,17 @@
       color: rgba(255,255,255,0.5);
     }
 
+    /* ── Artist profile header — vertical stack on mobile ── */
+    .artist-hdr { flex-direction:column; align-items:stretch; text-align:center; }
+    #artistPageAvatar { align-self:center; }
+    .artist-hdr-info { min-width:0; }
+    .artist-hdr-info > div:first-child { justify-content:center; }
+    .artist-hdr-stats { justify-content:center; }
+    #artistSocialRow { justify-content:center; }
+    .artist-hdr-actions { flex-direction:row; flex-wrap:wrap; justify-content:center; }
+    .artist-hdr-actions button { flex:1 1 auto; min-height:44px; }
+    #artist-tab-nav button { min-height:44px; }
+
   } /* end @media(max-width:768px) */
 
   /* ── WAVEFORM ANIMATION ── */
@@ -2008,6 +2019,7 @@
   .gate-role-row { display:flex; gap:8px; margin:12px 0 18px; }
   .gate-role-opt { flex:1; padding:9px 4px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.03); color:var(--muted); font-size:0.78rem; font-weight:600; cursor:pointer; transition:all 0.2s; font-family:var(--font-body); text-align:center; }
   .gate-role-opt.sel { background:rgba(123,47,255,0.15); border-color:rgba(123,47,255,0.4); color:#A06EFF; }
+  @media(max-width:480px) { .gate-role-opt { flex:0 0 calc(50% - 5px) !important; } }
   .gate-submit { width:100%; padding:13px; background:var(--grad); border:none; border-radius:12px; color:#fff; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:var(--font-body); transition:opacity 0.2s; margin-top:6px; }
   .gate-submit:hover { opacity:0.88; }
   .gate-err { font-size:0.78rem; color:#E91E8C; margin-top:8px; display:none; }
@@ -3207,3 +3219,12 @@ footer p{font-size:0.72rem;color:var(--muted);}
 .fm-pub-social-btn { padding:7px 16px; border-radius:20px; border:1px solid var(--border); background:rgba(255,255,255,0.025); color:var(--text); font-size:0.78rem; font-weight:600; text-decoration:none; transition:all 0.18s; }
 .fm-pub-social-btn:hover { border-color:rgba(123,47,255,0.4); background:rgba(123,47,255,0.08); }
 .fm-pub-url { font-size:0.72rem; color:var(--muted); text-align:center; margin-top:20px; padding-top:16px; border-top:1px solid rgba(200,180,255,0.08); }
+
+/* ── MOBILE FIXES — 480px ── */
+@media(max-width:480px) {
+  /* Chat panel: full-width bottom sheet */
+  #artistChatPanel { bottom:0 !important; left:0 !important; right:0 !important; width:100% !important; border-radius:16px 16px 0 0 !important; }
+  #chatMsgInput { max-height:25vh; }
+  /* Profile card: fill grid cell */
+  .fm-artists-scroll > div, .fm-artists-scroll > a { width:auto !important; }
+}
